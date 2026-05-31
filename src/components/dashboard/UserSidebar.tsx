@@ -3,7 +3,7 @@ import { LogOut, Lock, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getStoredPackage, setStoredPackage } from "@/lib/dummy-data";
 
-const menu = [
+export const menu = [
   "Dashboard",
   "Pengaturan Umum",
   "Pilih Tema",

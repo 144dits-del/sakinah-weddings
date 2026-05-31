@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { UserSidebar } from "@/components/dashboard/UserSidebar";
+import { UserSidebar, menu } from "@/components/dashboard/UserSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
