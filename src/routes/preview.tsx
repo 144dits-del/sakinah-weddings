@@ -265,7 +265,7 @@ function Preview() {
           <div className="flex-1 flex flex-col justify-between h-full bg-background overflow-hidden">
             
             {/* Tampilan Content Area (Scrollable) */}
-            <div key={tabKey} className="flex-1 overflow-y-auto pb-16 scrollbar-none w-full animate-tab-slide">
+            <div key={tabKey} className={`flex-1 overflow-y-auto scrollbar-none w-full animate-tab-slide ${activePkg === "Sakinah" ? "pb-20" : "pb-16"}`}>
               
               {/* TAB 1: HOME */}
               {activeTab === "Home" && (
@@ -579,7 +579,7 @@ function Preview() {
             </div>
 
             {/* FIXED BOTTOM NAVIGATION BAR (LIMIT 4 NAVS) */}
-            <nav className="absolute bottom-0 inset-x-0 z-30 h-14 bg-background border-t border-border flex items-center justify-around text-[10px] font-bold text-muted-foreground shadow-[0_-2px_10px_rgba(0,0,0,0.05)] select-none">
+            <nav className={`absolute inset-x-0 z-30 h-14 bg-background border-t border-border flex items-center justify-around text-[10px] font-bold text-muted-foreground shadow-[0_-2px_10px_rgba(0,0,0,0.05)] select-none ${activePkg === "Sakinah" ? "bottom-5" : "bottom-0"}`}>
               {[
                 { tab: "Home", icon: HomeIcon },
                 { tab: "Mempelai", icon: Users },
@@ -601,6 +601,13 @@ function Preview() {
                 );
               })}
             </nav>
+
+            {/* WATERMARK KHUSUS PAKET GRATIS (SAKINAH) DI BAWAH BOTTOM BAR */}
+            {activePkg === "Sakinah" && (
+              <div className="absolute bottom-0 inset-x-0 z-30 h-5 bg-rose-50 dark:bg-rose-950/30 border-t border-rose-100 dark:border-rose-900/40 flex items-center justify-center text-[8px] font-semibold text-rose-600 select-none">
+                Undangan ini dibuat gratis menggunakan <span className="font-bold ml-1 text-rose-700 dark:text-rose-400">sakinahweb.lovable.app</span>
+              </div>
+            )}
 
           </div>
         )}
