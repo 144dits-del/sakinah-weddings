@@ -78,26 +78,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Sakinah Web" },
-      { name: "description", content: "Buat Website
-Undangan Pernikahan
-Digital dalam Hitungan Menit
-Dirancang untuk pasangan Indonesia yang menginginkan undangan elegan, romantis, dan berkelas tan" },
+      { name: "description", content: "Buat Website Undangan Pernikahan
+Digital dalam Hitungan Menit Dirancang untuk pasangan Indonesia yang menginginkan undangan elegan, romantis, dan berkelas" },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Sakinah Web" },
-      { property: "og:description", content: "Buat Website
-Undangan Pernikahan
-Digital dalam Hitungan Menit
-Dirancang untuk pasangan Indonesia yang menginginkan undangan elegan, romantis, dan berkelas tan" },
+      { property: "og:description", content: "Buat Website Undangan Pernikahan
+Digital dalam Hitungan Menit Dirancang untuk pasangan Indonesia yang menginginkan undangan elegan, romantis, dan berkelas" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Sakinah Web" },
-      { name: "twitter:description", content: "Buat Website
-Undangan Pernikahan
-Digital dalam Hitungan Menit
-Dirancang untuk pasangan Indonesia yang menginginkan undangan elegan, romantis, dan berkelas tan" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c491a7dc-13c9-4561-b2d1-7258c0cb6f97" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c491a7dc-13c9-4561-b2d1-7258c0cb6f97" },
+      { name: "twitter:description", content: "Buat Website Undangan Pernikahan
+Digital dalam Hitungan Menit Dirancang untuk pasangan Indonesia yang menginginkan undangan elegan, romantis, dan berkelas" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8a07b528-8b6a-428a-b288-35800d1515ad" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8a07b528-8b6a-428a-b288-35800d1515ad" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
