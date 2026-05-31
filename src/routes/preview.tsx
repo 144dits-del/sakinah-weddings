@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { toast, Toaster } from "sonner";
 import { useState, useEffect } from "react";
 import {
@@ -20,7 +21,6 @@ import {
   Users,
   Image as ImageIcon,
   Compass,
-  Music,
   Lock,
 } from "lucide-react";
 
@@ -33,6 +33,7 @@ function Preview() {
   const [activePkg, setActivePkg] = useState("Sakinah");
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
+  const [tabKey, setTabKey] = useState(0); // Trigger tab slide-in transition
   const [wishes, setWishes] = useState<any[]>([
     { name: "Dewi Lestari", relation: "Sahabat Wanita", text: "Selamat menempuh hidup baru bibi & rarw! Semoga sakinah mawaddah warahmah selalu." },
     { name: "Yusuf Kuncoro", text: "Selamat ya, semoga berkah pernikahannya." }
@@ -40,6 +41,37 @@ function Preview() {
   const [wishName, setWishName] = useState("");
   const [wishRelation, setWishRelation] = useState("Teman");
   const [wishText, setWishText] = useState("");
+
+  // Live countdown state
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isPast: false });
+
+  // Update target countdown live
+  useEffect(() => {
+    const targetDate = new Date("2026-05-30T14:30:00").getTime();
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      let diff = targetDate - now;
+
+      const isPast = diff < 0;
+      if (isPast) {
+        // Simulasi hitung mundur tersisa (misal 5 hari 12 jam) agar angka countdown tetap berdetik/ticking live
+        const simulatedTarget = now + (5 * 24 * 60 * 60 * 1000) + (12 * 60 * 60 * 1000) + (34 * 60 * 1000) + (12 * 1000);
+        diff = simulatedTarget - now;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setCountdown({ days, hours, minutes, seconds, isPast });
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [wedding]);
 
   // Muat data dari localStorage saat render pertama
   useEffect(() => {
@@ -77,9 +109,14 @@ function Preview() {
     toast.success("Doa & ucapan restu Anda berhasil dikirim!");
   };
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setTabKey((prev) => prev + 1); // Reset tab transition animation
+  };
+
   const isFeatureLocked = (feature: string) => {
     if (activePkg === "Sakinah") {
-      if (feature === "Cerita" || feature === "Ucapan") return true;
+      if (feature === "Cerita" || feature === "Ucapan" || feature === "Kado") return true;
     }
     return false;
   };
@@ -109,7 +146,7 @@ function Preview() {
         
         {/* Cover Undangan (Awal Mula Dibuka) */}
         {!isOpen ? (
-          <section className="absolute inset-0 z-50 bg-gradient-to-b from-cream via-ivory to-background flex flex-col items-center justify-center text-center p-6 select-none overflow-hidden">
+          <section className="absolute inset-0 z-50 bg-gradient-to-b from-cream via-ivory to-background flex flex-col items-center justify-center text-center p-6 select-none overflow-hidden animate-fade-in">
             {/* Hiasan Bunga Mini */}
             <div className="absolute top-8 text-gold text-2xl animate-pulse">🌸</div>
             
@@ -132,13 +169,33 @@ function Preview() {
               Sabtu, 30 Mei 2026
             </div>
 
-            {/* Countdown State EXPIRED */}
-            <div className="mt-6 p-4 rounded-2xl bg-gold-soft/30 border border-gold/15 max-w-xs mx-auto">
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Hitung Mundur Acara</div>
-              <div className="font-display text-xl font-black text-rose-600 tracking-wider mt-1.5 animate-pulse">
-                EXPIRED
+            {/* Live Ticking Countdown */}
+            <div className="mt-6 p-4 rounded-2xl bg-gold-soft/30 border border-gold/15 max-w-xs w-full mx-auto">
+              <div className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold">
+                {countdown.isPast ? "Simulasi Hitung Mundur (Acara Berlalu)" : "Hitung Mundur Acara"}
               </div>
-              <div className="text-[8px] text-muted-foreground mt-1 font-semibold">Tanggal pernikahan telah berlalu</div>
+              <div className="grid grid-cols-4 gap-1.5 mt-2">
+                {[
+                  { v: countdown.days, l: "Hari" },
+                  { v: countdown.hours, l: "Jam" },
+                  { v: countdown.minutes, l: "Menit" },
+                  { v: countdown.seconds, l: "Detik" },
+                ].map((item, idx) => (
+                  <div key={idx} className="bg-background/80 rounded-lg p-1.5 text-center">
+                    <div className="font-display text-base font-black text-gold leading-none">
+                      {item.v.toString().padStart(2, "0")}
+                    </div>
+                    <div className="text-[7px] text-muted-foreground uppercase font-bold mt-1">
+                      {item.l}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {countdown.isPast && (
+                <div className="text-[8px] text-rose-600 font-bold mt-2 uppercase tracking-wider animate-pulse">
+                  ⚠️ STATUS: ACARA TELAH BERLALU
+                </div>
+              )}
             </div>
 
             <Button
@@ -156,7 +213,7 @@ function Preview() {
           <div className="flex-1 flex flex-col justify-between h-full bg-background overflow-hidden">
             
             {/* Tampilan Content Area (Scrollable) */}
-            <div className="flex-1 overflow-y-auto pb-16 scrollbar-none">
+            <div key={tabKey} className="flex-1 overflow-y-auto pb-16 scrollbar-none w-full animate-tab-slide">
               
               {/* TAB 1: HOME */}
               {activeTab === "Home" && (
@@ -169,13 +226,25 @@ function Preview() {
                     Akan segera melangsungkan pernikahan pada hari bahagia kami.
                   </p>
                   
-                  <div className="my-8 flex justify-center gap-2 max-w-full">
-                    {[{ v: "EX", l: "Hari" }, { v: "PI", l: "Jam" }, { v: "RE", l: "Menit" }, { v: "D", l: "Detik" }].map((c, i) => (
-                      <div key={i} className="bg-gold-soft/50 rounded-xl p-3 w-16 text-center border border-gold/10">
-                        <div className="font-display text-lg font-black text-rose-600">{c.v}</div>
-                        <div className="text-[8px] text-muted-foreground uppercase font-bold">{c.l}</div>
-                      </div>
-                    ))}
+                  {/* Countdown live */}
+                  <div className="my-8 p-4 rounded-2xl bg-gold-soft/20 border border-gold/10 w-full max-w-xs mx-auto">
+                    <div className="grid grid-cols-4 gap-2">
+                      {[
+                        { v: countdown.days, l: "Hari" },
+                        { v: countdown.hours, l: "Jam" },
+                        { v: countdown.minutes, l: "Menit" },
+                        { v: countdown.seconds, l: "Detik" },
+                      ].map((item, idx) => (
+                        <div key={idx} className="bg-background/80 rounded-xl p-2.5 text-center">
+                          <div className="font-display text-lg font-black text-gold">
+                            {item.v.toString().padStart(2, "0")}
+                          </div>
+                          <div className="text-[8px] text-muted-foreground uppercase font-bold mt-1">
+                            {item.l}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="text-xs text-muted-foreground font-semibold">
@@ -228,9 +297,9 @@ function Preview() {
                 </section>
               )}
 
-              {/* TAB 3: UNDANGAN */}
+              {/* TAB 3: UNDANGAN (MENAMPILKAN ACARA & FITUR SCROLLABLE) */}
               {activeTab === "Undangan" && (
-                <section className="p-6 space-y-6 py-10">
+                <section className="p-6 space-y-8 py-10">
                   <div className="text-center space-y-2">
                     <h2 className="font-display text-2xl font-bold text-foreground">Undangan dan Acara</h2>
                     <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
@@ -239,12 +308,12 @@ function Preview() {
                   </div>
 
                   {/* Card Akad Nikah */}
-                  <div className="rounded-2xl border border-border bg-card p-5 text-center relative overflow-hidden">
+                  <div className="rounded-2xl border border-border bg-card p-5 text-center relative overflow-hidden shadow-sm">
                     <div className="absolute top-0 inset-x-0 h-1 bg-gold" />
                     <h3 className="font-display text-lg font-black text-foreground">Akad Nikah</h3>
                     <div className="my-3 flex flex-col items-center justify-center gap-1 text-xs">
-                      <div className="flex items-center gap-1.5 font-semibold">
-                        <Calendar className="h-3.5 w-3.5 text-gold" />
+                      <div className="flex items-center gap-1.5 font-semibold text-gold">
+                        <Calendar className="h-3.5 w-3.5" />
                         Sabtu, 30 Mei 2026
                       </div>
                       <div className="text-muted-foreground">Pukul 14:30 - 14:30 WIB</div>
@@ -256,12 +325,12 @@ function Preview() {
                   </div>
 
                   {/* Card Resepsi */}
-                  <div className="rounded-2xl border border-border bg-card p-5 text-center relative overflow-hidden">
+                  <div className="rounded-2xl border border-border bg-card p-5 text-center relative overflow-hidden shadow-sm">
                     <div className="absolute top-0 inset-x-0 h-1 bg-gold" />
                     <h3 className="font-display text-lg font-black text-foreground">Resepsi Pernikahan</h3>
                     <div className="my-3 flex flex-col items-center justify-center gap-1 text-xs">
-                      <div className="flex items-center gap-1.5 font-semibold">
-                        <Calendar className="h-3.5 w-3.5 text-gold" />
+                      <div className="flex items-center gap-1.5 font-semibold text-gold">
+                        <Calendar className="h-3.5 w-3.5" />
                         Minggu, 31 Mei 2026
                       </div>
                       <div className="text-muted-foreground">Pukul 14:30 - 14:30 WIB</div>
@@ -270,6 +339,117 @@ function Preview() {
                       <MapPin className="h-3.5 w-3.5 text-gold shrink-0 mt-0.5" />
                       <span>{wedding.resepsi.venue}</span>
                     </div>
+                  </div>
+
+                  {/* Kisah Cinta (Scrollable) */}
+                  <div className="border-t border-border/60 pt-6 space-y-4">
+                    <h3 className="font-display text-lg font-bold text-center text-foreground flex items-center justify-center gap-1.5">
+                      💖 Kisah Cinta Kami
+                    </h3>
+                    {isFeatureLocked("Cerita") ? (
+                      <div className="bg-cream/40 border border-gold/15 p-5 rounded-2xl text-center space-y-3">
+                        <Lock className="h-5 w-5 text-gold mx-auto" />
+                        <div className="text-xs font-semibold">Fitur Cerita Terkunci</div>
+                        <p className="text-[10px] text-muted-foreground">
+                          Upgrade paket untuk mengaktifkan kisah cinta.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 text-xs text-muted-foreground italic">
+                        Belum ada cerita cinta yang dibagikan.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Galeri Foto (Scrollable) */}
+                  <div className="border-t border-border/60 pt-6 space-y-4">
+                    <h3 className="font-display text-lg font-bold text-center text-foreground flex items-center justify-center gap-1.5">
+                      📸 Galeri Foto Bahagia
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="aspect-square rounded-xl bg-gradient-to-br from-cream to-gold-soft/30 border border-gold/10 flex items-center justify-center text-[9px] text-muted-foreground font-semibold">
+                          Foto Galeri {i + 1}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Kado Nikah (Scrollable) */}
+                  <div className="border-t border-border/60 pt-6 space-y-4">
+                    <h3 className="font-display text-lg font-bold text-center text-foreground flex items-center justify-center gap-1.5">
+                      🎁 Kado Digital (Cashless)
+                    </h3>
+                    {isFeatureLocked("Kado") ? (
+                      <div className="bg-cream/40 border border-gold/15 p-5 rounded-2xl text-center space-y-3">
+                        <Lock className="h-5 w-5 text-gold mx-auto" />
+                        <div className="text-xs font-semibold">Fitur Kado Terkunci</div>
+                        <p className="text-[10px] text-muted-foreground">
+                          Kado digital eksklusif hanya aktif mulai paket Mawaddah.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center py-2 text-xs text-muted-foreground italic">
+                        Fitur Kado Digital Aktif (Silahkan kirim ke rekening tertera)
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Doa & Harapan (Scrollable) */}
+                  <div className="border-t border-border/60 pt-6 space-y-4">
+                    <h3 className="font-display text-lg font-bold text-center text-foreground flex items-center justify-center gap-1.5">
+                      💬 Doa & Harapan Tamu
+                    </h3>
+                    {isFeatureLocked("Ucapan") ? (
+                      <div className="bg-cream/40 border border-gold/15 p-5 rounded-2xl text-center space-y-3">
+                        <Lock className="h-5 w-5 text-gold mx-auto" />
+                        <div className="text-xs font-semibold">Fitur Doa & RSVP Terkunci</div>
+                        <p className="text-[10px] text-muted-foreground">
+                          Tersedia mulai dari paket keanggotaan Mawaddah.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Form Doa */}
+                        <form onSubmit={handleSendWish} className="space-y-3 bg-cream/10 p-4 rounded-xl border border-border text-xs">
+                          <div className="space-y-1">
+                            <Label className="text-[9px]">Nama Anda</Label>
+                            <Input
+                              value={wishName}
+                              onChange={(e) => setWishName(e.target.value)}
+                              placeholder="Nama lengkap..."
+                              className="text-xs h-8 bg-background"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[9px]">Pesan Doa Restu</Label>
+                            <Textarea
+                              value={wishText}
+                              onChange={(e) => setWishText(e.target.value)}
+                              placeholder="Tulis ucapan selamat..."
+                              className="text-xs"
+                              rows={2}
+                            />
+                          </div>
+                          <Button type="submit" className="w-full bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full h-8 font-semibold">
+                            Kirim Doa Restu
+                          </Button>
+                        </form>
+
+                        {/* List Doa */}
+                        <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                          {wishes.map((w, idx) => (
+                            <div key={idx} className="p-3 bg-muted/30 rounded-lg border border-border/60 text-[10px] space-y-1">
+                              <div className="font-bold text-foreground flex justify-between items-center">
+                                <span>{w.name}</span>
+                                <Badge className="text-[7px] h-3.5 bg-gold-soft/40 text-gold font-bold px-1.5">{w.relation || "Teman"}</Badge>
+                              </div>
+                              <p className="text-muted-foreground">"{w.text}"</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </section>
               )}
@@ -328,148 +508,22 @@ function Preview() {
                   </div>
                 </section>
               )}
-
-              {/* TAB 5: CERITA (LOCK GATE) */}
-              {activeTab === "Cerita" && (
-                <section className="p-6 py-10">
-                  {isFeatureLocked("Cerita") ? (
-                    <div className="text-center space-y-4 py-8">
-                      <div className="h-12 w-12 rounded-full bg-gold-soft mx-auto flex items-center justify-center text-gold">
-                        <Lock className="h-5 w-5" />
-                      </div>
-                      <h3 className="font-display font-semibold text-base">Cerita Cinta Terkunci</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
-                        Fitur Cerita Cinta terkunci untuk Paket Sakinah. Upgrade ke paket minimal{" "}
-                        <span className="text-gold font-bold">Mawaddah</span> untuk mengaktifkannya.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="text-center space-y-4 py-8">
-                      <div className="text-3xl text-gold">💖</div>
-                      <h3 className="font-display font-semibold text-base">Belum Ada Cerita Cinta</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
-                        Mempelai belum membagikan cerita cinta indah mereka.
-                      </p>
-                      <Button size="sm" className="bg-gold hover:bg-gold/90 text-primary-foreground rounded-full text-xs px-6">
-                        Tulis Cerita
-                      </Button>
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {/* TAB 6: PHOTO */}
-              {activeTab === "Photo" && (
-                <section className="p-6 py-10 space-y-4">
-                  <div className="text-center">
-                    <h2 className="font-display text-2xl font-bold text-foreground">Galeri Foto</h2>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-2">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i} className="aspect-square rounded-xl bg-gradient-to-br from-cream to-gold-soft/40 border border-gold/10 flex items-center justify-center text-[10px] text-muted-foreground">
-                        Foto Dummy {i + 1}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="text-center pt-2">
-                    <Button size="sm" variant="outline" className="rounded-full text-xs">
-                      Unggah Photo
-                    </Button>
-                  </div>
-                </section>
-              )}
-
-              {/* TAB 7: UCAPAN */}
-              {activeTab === "Ucapan" && (
-                <section className="p-6 py-10 space-y-6">
-                  <div className="text-center">
-                    <h2 className="font-display text-2xl font-bold text-foreground">Doa & Harapan</h2>
-                  </div>
-
-                  {isFeatureLocked("Ucapan") ? (
-                    <div className="rounded-xl border border-gold/15 bg-cream/30 p-4 text-center text-xs text-muted-foreground">
-                      ⚠️ Fitur doa & RSVP tersedia mulai paket <b>Mawaddah</b>.
-                    </div>
-                  ) : (
-                    <>
-                      {/* Form Doa */}
-                      <form onSubmit={handleSendWish} className="space-y-3 bg-cream/20 p-4 rounded-2xl border border-border/80">
-                        <div className="space-y-1">
-                          <Label className="text-[10px] font-semibold">Nama Lengkap</Label>
-                          <Input
-                            value={wishName}
-                            onChange={(e) => setWishName(e.target.value)}
-                            placeholder="Tulis nama Anda..."
-                            className="text-xs h-8 bg-background"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-[10px] font-semibold">Hubungan / Status</Label>
-                          <select
-                            value={wishRelation}
-                            onChange={(e) => setWishRelation(e.target.value)}
-                            className="w-full text-xs h-8 px-2 rounded-md border border-input bg-background"
-                          >
-                            <option value="Teman">Teman</option>
-                            <option value="Keluarga">Keluarga</option>
-                            <option value="Rekan Kerja">Rekan Kerja</option>
-                          </select>
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-[10px] font-semibold">Doa & Harapan</Label>
-                          <Textarea
-                            value={wishText}
-                            onChange={(e) => setWishText(e.target.value)}
-                            placeholder="Tulis ucapan selamat..."
-                            className="text-xs"
-                            rows={2}
-                          />
-                        </div>
-                        <Button type="submit" className="w-full bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full h-8 font-semibold">
-                          Kirim Doa Restu
-                        </Button>
-                      </form>
-
-                      {/* Daftar Doa */}
-                      <div className="space-y-3">
-                        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Doa Masuk ({wishes.length})</h3>
-                        <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
-                          {wishes.map((w, idx) => (
-                            <div key={idx} className="p-3 bg-muted/40 rounded-xl border border-border text-[11px] space-y-1">
-                              <div className="flex justify-between items-center font-bold text-foreground">
-                                <span>{w.name}</span>
-                                <Badge className="text-[8px] h-4 bg-gold-soft text-gold px-1.5">{w.relation || "Teman"}</Badge>
-                              </div>
-                              <p className="text-muted-foreground leading-relaxed">"{w.text}"</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </section>
-              )}
             </div>
 
-            {/* FIXED BOTTOM BAR */}
-            <nav className="absolute bottom-0 inset-x-0 z-30 h-14 bg-background border-t border-border flex items-center justify-around text-[9px] font-bold text-muted-foreground shadow-[0_-2px_10px_rgba(0,0,0,0.05)] select-none">
+            {/* FIXED BOTTOM NAVIGATION BAR (LIMIT 4 NAVS) */}
+            <nav className="absolute bottom-0 inset-x-0 z-30 h-14 bg-background border-t border-border flex items-center justify-around text-[10px] font-bold text-muted-foreground shadow-[0_-2px_10px_rgba(0,0,0,0.05)] select-none">
               {[
                 { tab: "Home", icon: HomeIcon },
                 { tab: "Mempelai", icon: Users },
                 { tab: "Undangan", icon: Calendar },
                 { tab: "Map", icon: Compass },
-                { tab: "Cerita", icon: Heart },
-                { tab: "Photo", icon: ImageIcon },
-                { tab: "Ucapan", icon: MessageCircle },
               ].map((item) => {
                 const isActive = activeTab === item.tab;
                 return (
                   <button
                     key={item.tab}
-                    onClick={() => setActiveTab(item.tab)}
-                    className={`flex flex-col items-center justify-center gap-0.5 w-12 h-full transition relative
+                    onClick={() => handleTabChange(item.tab)}
+                    className={`flex flex-col items-center justify-center gap-0.5 w-16 h-full transition relative
                       ${isActive ? "text-gold" : "hover:text-foreground"}`}
                   >
                     <item.icon className="h-4 w-4" />

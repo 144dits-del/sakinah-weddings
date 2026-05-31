@@ -13,6 +13,7 @@ import {
   adminStats,
   formatRupiah,
   templates as defaultTemplates,
+  setStoredPackage,
 } from "@/lib/dummy-data";
 import {
   Users,
@@ -128,11 +129,32 @@ function Admin() {
 
   // Actions
   const handleApproveTransaction = (id: string) => {
-    const next = transactionsList.map((t) =>
+    const tx = transactionsList.find((t) => t.id === id);
+    if (!tx) return;
+
+    // 1. Perbarui status transaksi menjadi sukses
+    const nextTxs = transactionsList.map((t) =>
       t.id === id ? { ...t, status: "success" as const } : t
     );
-    handleSaveTransactions(next);
-    toast.success(`Transaksi ${id} berhasil disetujui!`);
+    handleSaveTransactions(nextTxs);
+
+    // 2. Cari user terkait di usersList dan upgrade paketnya otomatis
+    const nextUsers = usersList.map((u) => {
+      if (u.name.toLowerCase() === tx.user.toLowerCase()) {
+        return { ...u, package: tx.package };
+      }
+      return u;
+    });
+    handleSaveUsers(nextUsers);
+
+    // 3. Jika transaksi tersebut adalah untuk user aktif saat ini (adbi/bibi), kita upgrade paket aktif sistem secara otomatis!
+    if (tx.user.toLowerCase() === "adbi" || tx.user.toLowerCase() === "bibi") {
+      setStoredPackage(tx.package);
+      // Dispatch event agar sidebar/dashboard ter-update seketika
+      window.dispatchEvent(new Event("sakinah_package_changed"));
+    }
+
+    toast.success(`Pembayaran terverifikasi! Transaksi ${id} disetujui, akun ${tx.user} otomatis di-upgrade ke paket ${tx.package}! 🚀`);
   };
 
   const handleCancelTransaction = (id: string) => {
