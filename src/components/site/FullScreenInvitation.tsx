@@ -53,17 +53,29 @@ export default function FullScreenInvitation({
 
   // Update target countdown live
   useEffect(() => {
-    const targetDate = new Date("2026-05-30T14:30:00").getTime();
+    let targetTime = new Date("2026-05-30T14:30:00").getTime();
+    if (wedding.akad && wedding.akad.date) {
+      try {
+        const parsed = new Date(wedding.akad.date).getTime();
+        if (!isNaN(parsed)) {
+          targetTime = parsed;
+        }
+      } catch (e) {}
+    }
+
+    const nowAtStart = new Date().getTime();
+    let isPast = targetTime - nowAtStart < 0;
+
+    const finalTarget = isPast 
+      ? nowAtStart + (5 * 24 * 60 * 60 * 1000) + (12 * 60 * 60 * 1000) + (34 * 60 * 1000) + (12 * 1000)
+      : targetTime;
 
     const updateTimer = () => {
       const now = new Date().getTime();
-      let diff = targetDate - now;
+      let diff = finalTarget - now;
 
-      const isPast = diff < 0;
-      if (isPast) {
-        // Jika sudah berlalu, buat simulasi waktu tersisa (misal 5 hari 12 jam) agar angka countdown tetap berdetik/ticking live untuk demo!
-        const simulatedTarget = now + (5 * 24 * 60 * 60 * 1000) + (12 * 60 * 60 * 1000) + (34 * 60 * 1000) + (12 * 1000);
-        diff = simulatedTarget - now;
+      if (diff < 0) {
+        diff = 0;
       }
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -127,6 +139,46 @@ export default function FullScreenInvitation({
 
   const isMapAddressUnset = (address: string) => {
     return !address || address.trim() === "" || address.trim() === "Peta belum diatur";
+  };
+
+  const renderMapPreview = (address: string, mapsUrl?: string) => {
+    if (!mapsUrl || mapsUrl.trim() === "") {
+      return (
+        <div className="h-36 rounded-lg bg-cream/40 border border-gold/15 flex flex-col items-center justify-center text-[10px] text-muted-foreground p-3 text-center">
+          <Compass className="h-5 w-5 text-gold/60 mb-1" />
+          <span>Lokasi: {address}</span>
+          <span className="text-[8px] text-muted-foreground/80 mt-1">(Tautan Peta belum diatur di Dashboard)</span>
+        </div>
+      );
+    }
+
+    if (mapsUrl.includes("<iframe")) {
+      let cleanedIframe = mapsUrl
+        .replace(/width="[0-9%]+"/, 'width="100%"')
+        .replace(/height="[0-9%]+"/, 'height="100%"');
+      if (!cleanedIframe.includes("style=")) {
+        cleanedIframe = cleanedIframe.replace("<iframe", '<iframe style="border:0; width:100%; height:100%; border-radius:0.5rem;"');
+      }
+      return (
+        <div 
+          className="h-36 w-full rounded-lg overflow-hidden border border-border bg-muted/40"
+          dangerouslySetInnerHTML={{ __html: cleanedIframe }}
+        />
+      );
+    }
+
+    return (
+      <a 
+        href={mapsUrl} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="h-36 rounded-lg bg-gradient-to-br from-cream/50 to-gold-soft/20 border border-gold/20 flex flex-col items-center justify-center text-[10px] text-muted-foreground hover:bg-gold-soft/30 transition p-4 text-center cursor-pointer group"
+      >
+        <MapPin className="h-6 w-6 text-gold group-hover:scale-110 transition mb-1" />
+        <span className="font-semibold text-foreground">Klik untuk Buka Google Maps</span>
+        <span className="text-[8px] text-gold mt-1 max-w-full px-2 truncate">{mapsUrl}</span>
+      </a>
+    );
   };
 
   return (
@@ -481,10 +533,18 @@ export default function FullScreenInvitation({
                             <MapPin className="h-3.5 w-3.5 text-gold shrink-0 mt-0.5" />
                             {wedding.akad.venue}
                           </div>
-                          <div className="h-28 rounded-lg bg-cream/40 border border-gold/15 flex items-center justify-center text-[10px] text-muted-foreground">
-                            Pratinjau Peta Akad Nikah
-                          </div>
-                          <Button size="sm" variant="outline" className="w-full text-xs rounded-full">
+                          {renderMapPreview(wedding.akad.venue, wedding.akad.maps)}
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="w-full text-xs rounded-full cursor-pointer hover:bg-gold-soft"
+                            onClick={() => {
+                              const url = wedding.akad.maps && wedding.akad.maps.startsWith("http") 
+                                ? wedding.akad.maps 
+                                : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(wedding.akad.venue)}`;
+                              window.open(url, "_blank");
+                            }}
+                          >
                             Buka Google Maps
                           </Button>
                         </>
@@ -504,10 +564,18 @@ export default function FullScreenInvitation({
                             <MapPin className="h-3.5 w-3.5 text-gold shrink-0 mt-0.5" />
                             {wedding.resepsi.venue}
                           </div>
-                          <div className="h-28 rounded-lg bg-cream/40 border border-gold/15 flex items-center justify-center text-[10px] text-muted-foreground">
-                            Pratinjau Peta Resepsi
-                          </div>
-                          <Button size="sm" variant="outline" className="w-full text-xs rounded-full">
+                          {renderMapPreview(wedding.resepsi.venue, wedding.resepsi.maps)}
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="w-full text-xs rounded-full cursor-pointer hover:bg-gold-soft"
+                            onClick={() => {
+                              const url = wedding.resepsi.maps && wedding.resepsi.maps.startsWith("http") 
+                                ? wedding.resepsi.maps 
+                                : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(wedding.resepsi.venue)}`;
+                              window.open(url, "_blank");
+                            }}
+                          >
                             Buka Google Maps
                           </Button>
                         </>

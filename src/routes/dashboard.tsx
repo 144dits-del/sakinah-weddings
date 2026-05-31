@@ -94,6 +94,13 @@ function Dashboard() {
   const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [selectedMusic, setSelectedMusic] = useState("Beautiful - Instrumental");
   const [customLanguage, setCustomLanguage] = useState<Record<string, string>>({});
+  
+  // States untuk Simulasi Payment Gateway
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [pendingPkg, setPendingPkg] = useState<"Mawaddah" | "Warahmah">("Mawaddah");
+  const [paymentMethod, setPaymentMethod] = useState<"QRIS" | "BCA">("QRIS");
+  const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   // States untuk forms
   const [domainName, setDomainName] = useState("");
@@ -127,12 +134,14 @@ function Dashboard() {
   const [akadDate, setAkadDate] = useState("");
   const [akadTime, setAkadTime] = useState("");
   const [akadVenue, setAkadVenue] = useState("");
+  const [akadMaps, setAkadMaps] = useState("");
   const [akadMain, setAkadMain] = useState(true);
 
   const [resepsiShow, setResepsiShow] = useState(true);
   const [resepsiDate, setResepsiDate] = useState("");
   const [resepsiTime, setResepsiTime] = useState("");
   const [resepsiVenue, setResepsiVenue] = useState("");
+  const [resepsiMaps, setResepsiMaps] = useState("");
   const [resepsiMain, setResepsiMain] = useState(false);
 
   // RSVP Form
@@ -183,11 +192,13 @@ function Dashboard() {
     setAkadDate(data.akad.date);
     setAkadTime(`${data.akad.start} - ${data.akad.end}`);
     setAkadVenue(data.akad.venue);
+    setAkadMaps(data.akad.maps || "");
     setAkadMain(localStorage.getItem("sakinah_akad_main") !== "false");
 
     setResepsiDate(data.resepsi.date);
     setResepsiTime(`${data.resepsi.start} - ${data.resepsi.end}`);
     setResepsiVenue(data.resepsi.venue);
+    setResepsiMaps(data.resepsi.maps || "");
     setResepsiMain(localStorage.getItem("sakinah_resepsi_main") === "true");
 
     // Muat RSVP
@@ -271,8 +282,8 @@ function Dashboard() {
       ...weddingData,
       religion,
       timezone,
-      akad: { date: akadDate, start: startAkad, end: endAkad, venue: akadVenue },
-      resepsi: { date: resepsiDate, start: startResepsi, end: endResepsi, venue: resepsiVenue },
+      akad: { date: akadDate, start: startAkad, end: endAkad, venue: akadVenue, maps: akadMaps },
+      resepsi: { date: resepsiDate, start: startResepsi, end: endResepsi, venue: resepsiVenue, maps: resepsiMaps },
     };
     handleSaveWeddingData(updated);
     localStorage.setItem("sakinah_map_type", mapType);
@@ -332,6 +343,42 @@ function Dashboard() {
     toast.success("Bahasa kustom berhasil disimpan!");
   };
 
+  const handleOpenUpgradePayment = (pkg: "Mawaddah" | "Warahmah") => {
+    setPendingPkg(pkg);
+    setPaymentMethod("QRIS");
+    setIsVerifyingPayment(false);
+    setPaymentSuccess(false);
+    setShowPaymentModal(true);
+  };
+
+  const handleConfirmSimulatedPayment = () => {
+    setIsVerifyingPayment(true);
+    setTimeout(() => {
+      setIsVerifyingPayment(false);
+      setPaymentSuccess(true);
+      
+      // Update package state & storage
+      setStoredPackage(pendingPkg);
+      setActivePkg(pendingPkg);
+      window.dispatchEvent(new Event("sakinah_package_changed"));
+      
+      // Add successful transaction to simulated history
+      const storedTxs = localStorage.getItem("sakinah_admin_txs");
+      const currentTxs = storedTxs ? JSON.parse(storedTxs) : [];
+      const newTx = {
+        id: `TRX${Math.floor(1000 + Math.random() * 9000)}`,
+        user: weddingData.groom.nickname || "User",
+        package: pendingPkg,
+        amount: pendingPkg === "Mawaddah" ? 89000 : 199000,
+        status: "success",
+        date: new Date().toISOString().split("T")[0],
+      };
+      localStorage.setItem("sakinah_admin_txs", JSON.stringify([newTx, ...currentTxs]));
+
+      toast.success(`Selamat! Pembayaran berhasil diterima. Paket Anda telah aktif sebagai ${pendingPkg}! 🎉`);
+    }, 2000);
+  };
+
   const isFeatureLocked = (m: string) => {
     const req = packageRequirements[m];
     if (!req) return false;
@@ -357,15 +404,10 @@ function Dashboard() {
         </p>
         <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
           <Button
-            onClick={() => {
-              setStoredPackage(req);
-              setActivePkg(req);
-              window.dispatchEvent(new Event("sakinah_package_changed"));
-              toast.success(`Berhasil mengupgrade ke paket ${req} untuk pengujian!`);
-            }}
-            className="bg-gold hover:bg-gold/90 text-primary-foreground font-medium rounded-full px-6 py-2 shadow-sm text-xs"
+            onClick={() => handleOpenUpgradePayment(req as any)}
+            className="bg-gold hover:bg-gold/90 text-primary-foreground font-medium rounded-full px-6 py-2 shadow-sm text-xs cursor-pointer"
           >
-            Upgrade ke {req} Sekarang (Klik Instan)
+            Upgrade ke {req} Sekarang (Simulasi QRIS)
           </Button>
         </div>
       </div>
@@ -463,13 +505,8 @@ function Dashboard() {
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    onClick={() => {
-                      setStoredPackage("Mawaddah");
-                      setActivePkg("Mawaddah");
-                      window.dispatchEvent(new Event("sakinah_package_changed"));
-                      toast.success("Sukses upgrade simulasi paket ke Mawaddah!");
-                    }}
-                    className="bg-gold hover:bg-gold/90 text-primary-foreground rounded-full text-xs font-semibold"
+                    onClick={() => handleOpenUpgradePayment("Mawaddah")}
+                    className="bg-gold hover:bg-gold/90 text-primary-foreground rounded-full text-xs font-semibold cursor-pointer"
                   >
                     Buka Paket Mawaddah
                   </Button>
@@ -866,10 +903,20 @@ function Dashboard() {
                     <Label className="text-xs">Tempat Akad & Alamat</Label>
                     <Input value={akadVenue} onChange={(e) => setAkadVenue(e.target.value)} className="text-xs" />
                   </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Tautan Google Maps Akad (URL Link / Embed Iframe)</Label>
+                    <Input 
+                      value={akadMaps} 
+                      onChange={(e) => setAkadMaps(e.target.value)} 
+                      placeholder="Contoh: https://maps.app.goo.gl/... atau tag <iframe>" 
+                      className="text-xs font-mono"
+                    />
+                  </div>
                   
                   <div className="text-[10px] text-muted-foreground bg-cream/40 px-3 py-2 rounded-lg border border-gold/10 flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-gold" />
-                    <span>Google Maps: <b>Peta belum diatur</b></span>
+                    <span>Google Maps: {akadMaps ? <b className="text-emerald-600">Teratur ({akadMaps.substring(0, 30)}...)</b> : <b>Peta belum diatur</b>}</span>
                   </div>
                 </div>
               )}
@@ -922,9 +969,19 @@ function Dashboard() {
                     <Input value={resepsiVenue} onChange={(e) => setResepsiVenue(e.target.value)} className="text-xs" />
                   </div>
 
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Tautan Google Maps Resepsi (URL Link / Embed Iframe)</Label>
+                    <Input 
+                      value={resepsiMaps} 
+                      onChange={(e) => setResepsiMaps(e.target.value)} 
+                      placeholder="Contoh: https://maps.app.goo.gl/... atau tag <iframe>" 
+                      className="text-xs font-mono"
+                    />
+                  </div>
+
                   <div className="text-[10px] text-muted-foreground bg-cream/40 px-3 py-2 rounded-lg border border-gold/10 flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-gold" />
-                    <span>Google Maps: <b>Peta belum diatur</b></span>
+                    <span>Google Maps: {resepsiMaps ? <b className="text-emerald-600">Teratur ({resepsiMaps.substring(0, 30)}...)</b> : <b>Peta belum diatur</b>}</span>
                   </div>
                 </div>
               )}
@@ -1417,16 +1474,86 @@ function Dashboard() {
             {isFeatureLocked("Wedding Wall") ? (
               renderLockedState("Wedding Wall")
             ) : (
-              <div className="rounded-2xl border border-border bg-card p-6 max-w-2xl space-y-4">
-                <h2 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
-                  <Tv className="h-5 w-5 text-gold" /> Fitur Wedding Wall (Display LED / Proyektor)
-                </h2>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Fitur ini menampilkan ucapan dan doa selamat secara live real-time dari tamu-tamu di layar lebar 
-                  proyektor atau TV LED selama resepsi pernikahan di gedung Anda.
-                </p>
-                <div className="rounded-xl border border-border bg-muted/40 p-6 text-center text-xs text-muted-foreground">
-                  🔒 Fitur premium terintegrasi khusus member berbayar.
+              <div className="rounded-2xl border border-border bg-card p-6 max-w-3xl space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-4">
+                  <div>
+                    <h2 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
+                      <Tv className="h-5 w-5 text-gold" /> Panel Wedding Wall (LED & Proyektor)
+                    </h2>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Tampilkan doa restu dan ucapan selamat secara live di layar resepsi pernikahan Anda.
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => {
+                      toast.success("Membuka Wedding Wall Mode Display Proyektor...");
+                      window.open("/preview?tab=Ucapan", "_blank");
+                    }}
+                    className="bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full font-semibold px-4 h-8 shrink-0 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" /> Buka Layar Penuh (Display Mode)
+                  </Button>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6">
+                  {/* Konfigurasi */}
+                  <div className="md:col-span-1 space-y-4 text-xs">
+                    <h3 className="font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Desain Layar</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-[10px]">Warna Tema Background</Label>
+                        <select className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-input bg-background mt-1 text-foreground">
+                          <option>Gold Luxury (Bawaan)</option>
+                          <option>Romantic Blossom Pink</option>
+                          <option>Elegant Emerald Green</option>
+                          <option>Minimalist Dark Gold</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-[10px]">Gaya Huruf (Font Family)</Label>
+                        <select className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-input bg-background mt-1 text-foreground">
+                          <option>Playfair Display</option>
+                          <option>Outfit (Sans-Serif)</option>
+                          <option>Montserrat</option>
+                          <option>Cinzel Decorative</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-[10px]">Kecepatan Gulir Doa</Label>
+                        <select className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-input bg-background mt-1 text-foreground">
+                          <option>Lambat (Membaca Santai)</option>
+                          <option>Sedang (Bawaan)</option>
+                          <option>Cepat (Banyak Ucapan)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Live Feed Simulator */}
+                  <div className="md:col-span-2 space-y-4">
+                    <h3 className="font-semibold text-muted-foreground uppercase tracking-wider text-[10px] text-xs">Simulasi Live Feed</h3>
+                    <div className="rounded-xl border border-gold/20 bg-gradient-to-b from-stone-950 via-amber-950/20 to-stone-950 p-4 min-h-[160px] flex flex-col justify-between text-xs relative overflow-hidden shadow-inner text-white">
+                      <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                        <span className="text-[8px] text-emerald-400 font-bold uppercase tracking-wider">LIVE FEED ACTIVE</span>
+                      </div>
+                      
+                      <div className="space-y-2 mt-4 max-h-24 overflow-y-auto pr-1">
+                        <div className="bg-stone-900/60 border border-gold/15 p-2 rounded-lg text-[10px]">
+                          <div className="font-semibold text-gold">Ahmad & Fani - Meja 4</div>
+                          <p className="text-stone-300">"Selamat menempuh hidup baru bibi & rarw! acaranya seru sekali."</p>
+                        </div>
+                        <div className="bg-stone-900/60 border border-gold/15 p-2 rounded-lg text-[10px]">
+                          <div className="font-semibold text-gold">Dwi Lestari - VIP Utama</div>
+                          <p className="text-stone-300">"Sakinah Mawaddah Warahmah selalu kawan lamaku!"</p>
+                        </div>
+                      </div>
+
+                      <div className="text-[9px] text-muted-foreground text-center border-t border-white/5 pt-2 mt-2">
+                        Doa tamu dari **Meja Ucapan** atau **RSVP Undangan** akan ter-render live di sini.
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1439,17 +1566,87 @@ function Dashboard() {
             {isFeatureLocked("Ucapan Meja") ? (
               renderLockedState("Ucapan Meja")
             ) : (
-              <div className="rounded-2xl border border-border bg-card p-6 max-w-2xl space-y-4">
-                <h2 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5 text-gold" /> Fitur Meja Ucapan Tamu (Table Greetings)
-                </h2>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Fitur eksklusif untuk meletakkan barcode QR code unik di masing-masing meja tamu resepsi. 
-                  Tamu di meja tersebut dapat men-scan QR code dan menuliskan ucapan khusus meja mereka yang akan langsung 
-                  muncul di Wedding Wall.
-                </p>
-                <div className="rounded-xl border border-border bg-muted/40 p-6 text-center text-xs text-muted-foreground">
-                  🔒 Fitur premium terintegrasi khusus member berbayar.
+              <div className="rounded-2xl border border-border bg-card p-6 max-w-3xl space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-4">
+                  <div>
+                    <h2 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
+                      <MessageCircle className="h-5 w-5 text-gold" /> Fitur Meja Ucapan Tamu (Table Greetings)
+                    </h2>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Buat QR Code unik untuk masing-masing meja agar tamu dapat mengirim ucapan berkategori meja.
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => {
+                      toast.success("Berhasil menambahkan meja baru! QR Code siap diunduh.");
+                    }}
+                    className="bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full font-semibold px-4 h-8 shrink-0 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Tambah Meja Baru
+                  </Button>
+                </div>
+
+                <div className="grid md:grid-cols-5 gap-6">
+                  {/* Table List */}
+                  <div className="md:col-span-3 space-y-3">
+                    <h3 className="font-semibold text-muted-foreground uppercase tracking-wider text-[10px] text-xs">Daftar QR Meja Tamu</h3>
+                    <div className="border border-border rounded-xl overflow-hidden text-xs">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-muted border-b border-border font-semibold">
+                            <th className="p-2.5">Nama Meja</th>
+                            <th className="p-2.5">Doa Masuk</th>
+                            <th className="p-2.5 text-right">Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-border/40 hover:bg-muted/10">
+                            <td className="p-2.5 font-semibold">Meja VIP Utama</td>
+                            <td className="p-2.5">14 Doa</td>
+                            <td className="p-2.5 text-right flex gap-1.5 justify-end">
+                              <Button size="sm" variant="outline" className="h-7 text-[9px] rounded-full cursor-pointer" onClick={() => toast.success("QR Code Meja VIP Utama berhasil diunduh!")}>Download QR</Button>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-border/40 hover:bg-muted/10">
+                            <td className="p-2.5 font-semibold">Meja Keluarga Pria</td>
+                            <td className="p-2.5">8 Doa</td>
+                            <td className="p-2.5 text-right flex gap-1.5 justify-end">
+                              <Button size="sm" variant="outline" className="h-7 text-[9px] rounded-full cursor-pointer" onClick={() => toast.success("QR Code Meja Keluarga Pria berhasil diunduh!")}>Download QR</Button>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-border/40 hover:bg-muted/10">
+                            <td className="p-2.5 font-semibold">Meja Sahabat Kuliah</td>
+                            <td className="p-2.5">23 Doa</td>
+                            <td className="p-2.5 text-right flex gap-1.5 justify-end">
+                              <Button size="sm" variant="outline" className="h-7 text-[9px] rounded-full cursor-pointer" onClick={() => toast.success("QR Code Meja Sahabat Kuliah berhasil diunduh!")}>Download QR</Button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* QR Card Preview */}
+                  <div className="md:col-span-2 space-y-3">
+                    <h3 className="font-semibold text-muted-foreground uppercase tracking-wider text-[10px] text-xs">Desain Kartu Meja (Preview)</h3>
+                    <div className="rounded-xl border border-gold/30 bg-gradient-to-b from-cream/20 to-gold-soft/10 p-4 text-center text-xs space-y-3 shadow-sm relative overflow-hidden">
+                      <div className="text-[9px] uppercase tracking-widest text-gold font-bold">MEJA TAMU ANDA</div>
+                      <div className="font-display font-black text-sm text-foreground">MEJA SAHABAT KULIAH</div>
+                      
+                      {/* Simulated QR Code box */}
+                      <div className="h-28 w-28 rounded-lg bg-white border border-border mx-auto flex flex-col items-center justify-center p-2 relative">
+                        <div className="text-3xl text-stone-800">📱</div>
+                        <div className="text-[7px] text-muted-foreground font-semibold mt-1">SCAN QR UNTUK DOA</div>
+                      </div>
+
+                      <p className="text-[9px] text-muted-foreground px-2">
+                        Letakkan cetakan kartu ini di meja tamu. Tamu cukup scan dan ucapan langsung tampil di Wedding Wall proyektor!
+                      </p>
+                      <Button size="sm" className="w-full bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full h-8 font-semibold cursor-pointer" onClick={() => toast.success("Mencetak kartu meja Sahabat Kuliah...")}>
+                        Cetak Kartu Meja (PDF)
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1462,17 +1659,87 @@ function Dashboard() {
             {isFeatureLocked("Video Undangan") ? (
               renderLockedState("Video Undangan")
             ) : (
-              <div className="rounded-2xl border border-border bg-card p-6 max-w-2xl space-y-4">
-                <h2 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
-                  <Video className="h-5 w-5 text-gold" /> Ekspor Video Undangan Singkat (WhatsApp Video Invitation)
-                </h2>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Unduh video animasi undangan digital berdurasi 15-30 detik secara otomatis yang telah 
-                  ditempeli nama mempelai, tanggal acara, serta musik latar belakang, siap untuk di-share sebagai Story 
-                  Instagram, TikTok, atau pesan siaran langsung WhatsApp.
-                </p>
-                <div className="rounded-xl border border-border bg-muted/40 p-6 text-center text-xs text-muted-foreground">
-                  🔒 Fitur ultra eksklusif khusus pelanggan paket Warahmah.
+              <div className="rounded-2xl border border-border bg-card p-6 max-w-3xl space-y-6">
+                <div className="border-b border-border pb-4">
+                  <h2 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
+                    <Video className="h-5 w-5 text-gold" /> Generator Video Undangan Singkat (WhatsApp Video Invitation)
+                  </h2>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    Ekspor video undangan digital animasi berdurasi 15-30 detik dengan nama mempelai dan musik latar.
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-5 gap-6">
+                  {/* Video Customization */}
+                  <div className="md:col-span-2 space-y-4 text-xs">
+                    <h3 className="font-semibold text-muted-foreground uppercase tracking-wider text-[10px] text-xs">Kustomisasi Animasi</h3>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-[10px]">Ukuran / Dimensi Video</Label>
+                        <select className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-input bg-background mt-1 text-foreground">
+                          <option>Vertical Story 9:16 (WhatsApp & IG)</option>
+                          <option>Square Feed 1:1 (Instagram)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-[10px]">Template Animasi</Label>
+                        <select className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-input bg-background mt-1 text-foreground">
+                          <option>Romantic Gold Floral (Bawaan)</option>
+                          <option>Rose Velvet Vintage</option>
+                          <option>Minimalist modern line-art</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-[10px]">Musik Latar Belakang</Label>
+                        <select className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-input bg-background mt-1 text-foreground">
+                          <option>Beautiful - Instrumental (Bawaan)</option>
+                          <option>A Thousand Years (Instrumental)</option>
+                          <option>Wedding Vows Symphony</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <Button 
+                      onClick={() => {
+                        toast.promise(
+                          new Promise((resolve) => setTimeout(resolve, 3000)),
+                          {
+                            loading: "Merender video animasi undangan (Frame 1/300)...",
+                            success: "Video Undangan berhasil dirender dan diunduh!",
+                            error: "Gagal merender video.",
+                          }
+                        );
+                      }}
+                      className="w-full bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full h-9 font-semibold flex items-center justify-center gap-1.5 mt-2 cursor-pointer"
+                    >
+                      <Sparkles className="h-4 w-4" /> Render & Unduh Video
+                    </Button>
+                  </div>
+
+                  {/* Video Mock Preview */}
+                  <div className="md:col-span-3 space-y-3 flex flex-col">
+                    <h3 className="font-semibold text-muted-foreground uppercase tracking-wider text-[10px] text-xs">Pratinjau Animasi Video</h3>
+                    <div className="flex-1 rounded-xl border border-border bg-stone-950 p-4 aspect-[9/16] max-w-[200px] mx-auto flex flex-col justify-between text-white relative shadow-lg overflow-hidden text-center select-none min-h-[300px]">
+                      <div className="absolute inset-0 bg-gradient-to-b from-stone-950/60 via-amber-950/20 to-stone-950 opacity-90" />
+                      <div className="relative space-y-1 mt-4">
+                        <div className="text-[6px] tracking-widest text-gold font-bold">WALIMATUL 'URS</div>
+                        <div className="font-display font-black text-xs capitalize text-white">
+                          {weddingData.groom.nickname} & {weddingData.bride.nickname}
+                        </div>
+                      </div>
+                      
+                      <div className="relative my-auto flex flex-col items-center justify-center">
+                        <div className="text-2xl animate-bounce">💍</div>
+                        <div className="text-[6px] text-gold font-bold uppercase tracking-widest mt-2">SAVE THE DATE</div>
+                        <div className="text-[8px] font-semibold text-white/90 mt-1">SABTU, 30 MEI 2026</div>
+                      </div>
+
+                      <div className="relative text-[5px] text-white/60 mb-2">
+                        sakinahweb.id/{weddingData.subdomain}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1576,6 +1843,168 @@ function Dashboard() {
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+        {/* MODAL SIMULASI PAYMENT GATEWAY (MIDTRANS & QRIS) */}
+        {showPaymentModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+            <div className="bg-background border border-border rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-scale-in flex flex-col text-xs text-foreground">
+              
+              {/* Header Modal */}
+              <div className="bg-gradient-to-r from-gold-soft via-cream to-gold-soft p-5 border-b border-gold/20 flex justify-between items-center text-foreground">
+                <div>
+                  <h3 className="font-display font-bold text-sm text-foreground flex items-center gap-1.5">
+                    <CreditCard className="h-4.5 w-4.5 text-gold" /> Gerbang Pembayaran SakinahWeb
+                  </h3>
+                  <p className="text-[9px] text-muted-foreground mt-0.5">Integrasi API Midtrans & QRIS Instan</p>
+                </div>
+                <button 
+                  onClick={() => setShowPaymentModal(false)}
+                  className="h-7 w-7 rounded-full bg-background/80 hover:bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Body Modal */}
+              <div className="p-6 space-y-5 flex-1">
+                
+                {paymentSuccess ? (
+                  /* Success screen */
+                  <div className="text-center py-6 space-y-4 animate-scale-in">
+                    <div className="h-16 w-16 bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl">
+                      ✓
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="font-display font-bold text-base text-foreground">Pembayaran Berhasil!</h4>
+                      <p className="text-[10px] text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                        Terima kasih, sistem kami telah memverifikasi pembayaran Anda secara otomatis. Paket <b>{pendingPkg}</b> Anda sekarang telah aktif!
+                      </p>
+                    </div>
+                    <Button 
+                      onClick={() => setShowPaymentModal(false)}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-6 h-8 text-xs font-semibold cursor-pointer w-full mt-2"
+                    >
+                      Buka Fitur Premium
+                    </Button>
+                  </div>
+                ) : (
+                  /* Payment Form */
+                  <div className="space-y-4">
+                    {/* Invoice detail */}
+                    <div className="bg-muted/40 border border-border p-4 rounded-2xl flex justify-between items-center">
+                      <div>
+                        <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Pembelian Paket</div>
+                        <div className="font-bold text-foreground text-xs mt-0.5">Paket {pendingPkg} Lifetime</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Total Tagihan</div>
+                        <div className="font-display font-black text-gold text-sm mt-0.5">
+                          {pendingPkg === "Mawaddah" ? formatRupiah(89000) : formatRupiah(199000)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Payment methods tab */}
+                    <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-muted border border-border text-center">
+                      <button 
+                        onClick={() => setPaymentMethod("QRIS")}
+                        className={`py-1.5 text-[10px] font-bold rounded-lg transition cursor-pointer
+                          ${paymentMethod === "QRIS" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        QRIS (Gopay/OVO/QR)
+                      </button>
+                      <button 
+                        onClick={() => setPaymentMethod("BCA")}
+                        className={`py-1.5 text-[10px] font-bold rounded-lg transition cursor-pointer
+                          ${paymentMethod === "BCA" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        Transfer Bank (BCA)
+                      </button>
+                    </div>
+
+                    {/* Method Content */}
+                    {paymentMethod === "QRIS" ? (
+                      /* QRIS screen */
+                      <div className="space-y-3 text-center py-2 animate-fade-in">
+                        <div className="text-[9px] text-muted-foreground font-semibold">Pindai kode QRIS di bawah ini dengan aplikasi e-wallet Anda:</div>
+                        
+                        {/* Simulated QR Code card */}
+                        <div className="bg-white p-3 rounded-2xl border border-border w-40 h-40 mx-auto flex flex-col justify-between items-center relative shadow-sm">
+                          <div className="text-[8px] font-extrabold text-blue-900 tracking-wider">QRIS NASIONAL</div>
+                          
+                          {/* Mock QR grid */}
+                          <div className="h-28 w-28 border border-stone-200 rounded-md bg-stone-100 flex flex-col items-center justify-center p-2 relative">
+                            <span className="text-3xl">📱</span>
+                            <span className="text-[6px] text-stone-500 font-bold uppercase mt-1">SAKINAH DIGITAL</span>
+                          </div>
+
+                          <div className="text-[7px] font-bold text-stone-500">PASTI AMAN & INSTAN</div>
+                        </div>
+
+                        <div className="flex items-center justify-center gap-1.5 text-[10px] text-amber-600 font-bold">
+                          <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" />
+                          <span>Menunggu Pembayaran (Settle)...</span>
+                        </div>
+                      </div>
+                    ) : (
+                      /* BCA screen */
+                      <div className="space-y-3 p-4 bg-muted/20 border border-border/60 rounded-2xl animate-fade-in text-xs">
+                        <p className="text-[10px] text-muted-foreground">Silahkan transfer manual ke rekening bank resmi kami:</p>
+                        <div className="space-y-2 border-t border-border/40 pt-2.5">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Bank Tujuan:</span>
+                            <span className="font-bold text-foreground">BCA (Bank Central Asia)</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground">Nomor Rekening:</span>
+                            <span className="font-mono font-bold text-gold flex items-center gap-1">
+                              0928340129 
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="h-5 px-1.5 text-[8px] text-muted-foreground hover:text-foreground cursor-pointer"
+                                onClick={() => {
+                                  navigator.clipboard.writeText("0928340129");
+                                  toast.success("Nomor rekening BCA disalin!");
+                                }}
+                              >
+                                Salin
+                              </Button>
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Atas Nama:</span>
+                            <span className="font-semibold text-foreground">PT Sakinah Digital Indonesia</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action buttons */}
+                    <div className="space-y-2">
+                      <Button
+                        disabled={isVerifyingPayment}
+                        onClick={handleConfirmSimulatedPayment}
+                        className="bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full w-full h-9 font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-sm disabled:opacity-50"
+                      >
+                        {isVerifyingPayment ? (
+                          <>
+                            <span className="h-3.5 w-3.5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                            Memverifikasi Pembayaran...
+                          </>
+                        ) : (
+                          <>✓ Konfirmasi Pembayaran Selesai</>
+                        )}
+                      </Button>
+                      <p className="text-[8px] text-muted-foreground text-center">
+                        *Klik tombol di atas untuk menyimulasikan pembayaran lunas dari phone/ATM customer.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

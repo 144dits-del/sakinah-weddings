@@ -32,8 +32,8 @@ export type WeddingData = {
   bride: { fullName: string; nickname: string; father: string; mother: string };
   religion: string;
   timezone: string;
-  akad: { date: string; start: string; end: string; venue: string };
-  resepsi: { date: string; start: string; end: string; venue: string };
+  akad: { date: string; start: string; end: string; venue: string; maps?: string };
+  resepsi: { date: string; start: string; end: string; venue: string; maps?: string };
 };
 
 export const templates: Template[] = [
@@ -81,8 +81,8 @@ export const dummyWedding: WeddingData = {
   bride: { fullName: "rara", nickname: "rarw", father: "rwqwq", mother: "rrwr" },
   religion: "Islam",
   timezone: "WIB",
-  akad: { date: "2026-05-30", start: "14:30", end: "14:30", venue: "sda" },
-  resepsi: { date: "2026-05-31", start: "14:30", end: "14:30", venue: "21e21dsad" },
+  akad: { date: "2026-05-30", start: "14:30", end: "14:30", venue: "sda", maps: "" },
+  resepsi: { date: "2026-05-31", start: "14:30", end: "14:30", venue: "21e21dsad", maps: "" },
 };
 
 export const STORAGE_KEY = "sakinah_wedding_data";
