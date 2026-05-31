@@ -40,30 +40,147 @@ export default function FullScreenInvitation({
   const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [isOpen, setIsOpen] = useState(false);
 
-  const isMonochrome = selectedTemplate === "monochrome";
+  const isMonochrome = selectedTemplate === "monochrome" || selectedTemplate === "basic" || selectedTemplate === "t6";
 
-  const theme = {
-    bg: isMonochrome 
-      ? "bg-gradient-to-b from-zinc-100 via-white to-zinc-100 text-zinc-900" 
-      : "bg-gradient-to-br from-cream via-ivory to-gold-soft/20 text-foreground",
-    coverBg: isMonochrome
-      ? "bg-white text-zinc-900"
-      : "bg-gradient-to-b from-cream via-ivory to-background text-foreground",
-    cardBg: isMonochrome
-      ? "bg-white border-zinc-950 rounded-none border-2 p-5 text-center relative overflow-hidden text-zinc-900"
-      : "rounded-2xl border border-border bg-card p-5 text-center relative overflow-hidden shadow-sm text-foreground",
-    btn: isMonochrome
-      ? "bg-zinc-950 hover:bg-zinc-900 text-white rounded-none border border-zinc-950 cursor-pointer text-xs"
-      : "bg-gold hover:bg-gold/90 text-primary-foreground rounded-full text-xs font-semibold cursor-pointer",
-    btnOutline: isMonochrome
-      ? "border-zinc-950 hover:bg-zinc-100 text-zinc-950 rounded-none border cursor-pointer text-xs bg-white"
-      : "border-border hover:bg-gold-soft/10 text-muted-foreground hover:text-foreground rounded-full text-xs cursor-pointer",
-    textGold: isMonochrome ? "text-zinc-950 font-bold" : "text-gold",
-    fontHead: isMonochrome ? "font-serif" : "font-display",
-    borderGold: isMonochrome ? "border-zinc-950" : "border-gold/15",
-    badge: isMonochrome ? "bg-zinc-950 text-white hover:bg-zinc-950" : "bg-gold text-primary-foreground",
-    avatar: isMonochrome ? "bg-zinc-950 text-white rounded-none border-2 border-zinc-950" : "bg-gradient-to-br from-gold to-gold-soft text-white rounded-full"
+  const getTheme = (id: string) => {
+    const norm = id.toLowerCase();
+    const isMono = norm === "monochrome" || norm === "basic" || norm === "t6";
+    const isRose = norm === "rose_red" || norm === "t2" || norm === "blossom" || norm === "bliss";
+    const isMawaddah = norm === "t3" || norm === "chic";
+    const isLuxury = norm === "dark_gold" || norm === "dark_gold_2" || norm === "t4";
+    const isGarden = norm === "bloom" || norm === "t5" || norm === "bloom_bliss" || norm === "blossom_celebration";
+    const isRoyal = norm === "t7";
+    const isSweet = norm === "t8" || norm === "blossom";
+
+    if (isMono) {
+      return {
+        bg: "bg-gradient-to-b from-zinc-100 via-white to-zinc-100 text-zinc-900",
+        coverBg: "bg-white text-zinc-900",
+        cardBg: "bg-white border-zinc-950 rounded-none border-2 p-5 text-center relative overflow-hidden text-zinc-900",
+        btn: "bg-zinc-950 hover:bg-zinc-900 text-white rounded-none border border-zinc-950 cursor-pointer text-xs",
+        btnOutline: "border-zinc-950 hover:bg-zinc-100 text-zinc-950 rounded-none border cursor-pointer text-xs bg-white",
+        textGold: "text-zinc-950 font-bold",
+        fontHead: "font-serif",
+        borderGold: "border-zinc-950",
+        badge: "bg-zinc-950 text-white hover:bg-zinc-950",
+        avatar: "bg-zinc-950 text-white rounded-none border-2 border-zinc-950",
+        emoji: "✦ ✦ ✦"
+      };
+    }
+
+    if (isRose) {
+      return {
+        bg: "bg-gradient-to-br from-rose-50 via-pink-50/30 to-rose-100/40 text-rose-950",
+        coverBg: "bg-gradient-to-b from-rose-50 via-pink-50/50 to-background text-rose-950",
+        cardBg: "rounded-2xl border border-rose-200 bg-white/80 p-5 text-center relative overflow-hidden shadow-md text-rose-950",
+        btn: "bg-rose-500 hover:bg-rose-600 text-white rounded-full text-xs font-semibold cursor-pointer",
+        btnOutline: "border-rose-300 hover:bg-rose-50 text-rose-500 hover:text-rose-600 rounded-full text-xs cursor-pointer",
+        textGold: "text-rose-500",
+        fontHead: "font-display",
+        borderGold: "border-rose-200",
+        badge: "bg-rose-500 text-white",
+        avatar: "bg-gradient-to-br from-rose-400 to-pink-500 text-white rounded-full",
+        emoji: "🌹"
+      };
+    }
+
+    if (isMawaddah) {
+      return {
+        bg: "bg-gradient-to-br from-amber-50 via-yellow-50/30 to-amber-100/30 text-amber-950",
+        coverBg: "bg-gradient-to-b from-amber-50 via-ivory to-background text-amber-950",
+        cardBg: "rounded-2xl border border-amber-200 bg-white p-5 text-center relative overflow-hidden shadow-sm text-amber-950",
+        btn: "bg-amber-600 hover:bg-amber-700 text-white rounded-full text-xs font-semibold cursor-pointer",
+        btnOutline: "border-amber-300 hover:bg-amber-50 text-amber-700 rounded-full text-xs cursor-pointer",
+        textGold: "text-amber-600",
+        fontHead: "font-display",
+        borderGold: "border-amber-200",
+        badge: "bg-amber-600 text-white",
+        avatar: "bg-gradient-to-br from-amber-400 to-yellow-500 text-white rounded-full",
+        emoji: "💛"
+      };
+    }
+
+    if (isLuxury) {
+      return {
+        bg: "bg-gradient-to-br from-zinc-900 via-stone-900 to-black text-stone-100",
+        coverBg: "bg-gradient-to-b from-stone-950 via-zinc-900 to-stone-950 text-stone-100",
+        cardBg: "rounded-2xl border border-amber-500/30 bg-zinc-950 p-5 text-center relative overflow-hidden shadow-xl text-stone-100",
+        btn: "bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-bold rounded-full text-xs cursor-pointer",
+        btnOutline: "border-amber-500/50 hover:bg-amber-500/10 text-amber-400 rounded-full text-xs cursor-pointer",
+        textGold: "text-amber-400 font-bold",
+        fontHead: "font-display",
+        borderGold: "border-amber-500/25",
+        badge: "bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-bold",
+        avatar: "bg-gradient-to-br from-amber-400 to-yellow-500 text-black rounded-full",
+        emoji: "✨"
+      };
+    }
+
+    if (isGarden) {
+      return {
+        bg: "bg-gradient-to-br from-green-50 via-emerald-50/20 to-emerald-100/30 text-emerald-950",
+        coverBg: "bg-gradient-to-b from-green-50 via-ivory to-background text-emerald-950",
+        cardBg: "rounded-2xl border border-emerald-200 bg-white/90 p-5 text-center relative overflow-hidden shadow-sm text-emerald-950",
+        btn: "bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-semibold cursor-pointer",
+        btnOutline: "border-emerald-300 hover:bg-emerald-50 text-emerald-700 rounded-full text-xs cursor-pointer",
+        textGold: "text-emerald-600",
+        fontHead: "font-display",
+        borderGold: "border-emerald-200",
+        badge: "bg-emerald-600 text-white",
+        avatar: "bg-gradient-to-br from-emerald-400 to-green-500 text-white rounded-full",
+        emoji: "🌿"
+      };
+    }
+
+    if (isRoyal) {
+      return {
+        bg: "bg-gradient-to-br from-slate-900 via-blue-950 to-zinc-950 text-amber-100",
+        coverBg: "bg-gradient-to-b from-blue-950 via-slate-900 to-zinc-950 text-amber-100",
+        cardBg: "rounded-2xl border border-amber-400/40 bg-slate-950 p-5 text-center relative overflow-hidden shadow-xl text-amber-100",
+        btn: "bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-full text-xs font-semibold cursor-pointer",
+        btnOutline: "border-amber-400/50 hover:bg-amber-400/10 text-amber-300 rounded-full text-xs cursor-pointer",
+        textGold: "text-amber-400",
+        fontHead: "font-display",
+        borderGold: "border-amber-400/30",
+        badge: "bg-amber-500 text-slate-950",
+        avatar: "bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 rounded-full",
+        emoji: "👑"
+      };
+    }
+
+    if (isSweet) {
+      return {
+        bg: "bg-gradient-to-br from-pink-50 via-purple-50/20 to-indigo-100/30 text-purple-950",
+        coverBg: "bg-gradient-to-b from-pink-50 via-ivory to-background text-purple-950",
+        cardBg: "rounded-2xl border border-pink-200 bg-white/90 p-5 text-center relative overflow-hidden shadow-sm text-purple-950",
+        btn: "bg-pink-500 hover:bg-pink-600 text-white rounded-full text-xs font-semibold cursor-pointer",
+        btnOutline: "border-pink-300 hover:bg-pink-50 text-pink-700 rounded-full text-xs cursor-pointer",
+        textGold: "text-pink-500",
+        fontHead: "font-display",
+        borderGold: "border-pink-200",
+        badge: "bg-pink-500 text-white",
+        avatar: "bg-gradient-to-br from-pink-400 to-purple-500 text-white rounded-full",
+        emoji: "🌸"
+      };
+    }
+
+    // Default Sakinah Theme
+    return {
+      bg: "bg-gradient-to-br from-cream via-ivory to-gold-soft/20 text-foreground",
+      coverBg: "bg-gradient-to-b from-cream via-ivory to-background text-foreground",
+      cardBg: "rounded-2xl border border-border bg-card p-5 text-center relative overflow-hidden shadow-sm text-foreground",
+      btn: "bg-gold hover:bg-gold/90 text-primary-foreground rounded-full text-xs font-semibold cursor-pointer",
+      btnOutline: "border-border hover:bg-gold-soft/10 text-muted-foreground hover:text-foreground rounded-full text-xs cursor-pointer",
+      textGold: "text-gold",
+      fontHead: "font-display",
+      borderGold: "border-gold/15",
+      badge: "bg-gold text-primary-foreground",
+      avatar: "bg-gradient-to-br from-gold to-gold-soft text-white rounded-full",
+      emoji: "🌸"
+    };
   };
+
+  const theme = getTheme(selectedTemplate);
 
   const [activeTab, setActiveTab] = useState("Home");
   const [tabKey, setTabKey] = useState(0); // Digunakan untuk mereset animasi transisi

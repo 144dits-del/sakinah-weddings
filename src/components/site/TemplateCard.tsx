@@ -2,6 +2,7 @@ import { Lock, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Template } from "@/lib/dummy-data";
+import { Link } from "@tanstack/react-router";
 
 export function TemplateCard({ t }: { t: Template }) {
   const premium = t.type === "premium";
@@ -21,8 +22,12 @@ export function TemplateCard({ t }: { t: Template }) {
       <div className="p-4 space-y-3">
         <div className="font-display text-lg">{t.name}</div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1"><Eye className="h-4 w-4 mr-1" />Preview</Button>
-          <Button size="sm" className="flex-1 bg-gold hover:bg-gold/90 text-primary-foreground">Gunakan</Button>
+          <Link to="/preview" search={{ theme: t.id }} target="_blank" className="flex-1">
+            <Button variant="outline" size="sm" className="w-full cursor-pointer"><Eye className="h-4 w-4 mr-1" />Preview</Button>
+          </Link>
+          <Link to="/wizard" className="flex-1">
+            <Button size="sm" className="w-full bg-gold hover:bg-gold/90 text-primary-foreground cursor-pointer">Gunakan</Button>
+          </Link>
         </div>
       </div>
     </div>
