@@ -78,20 +78,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Sakinah Web" },
-      { name: "description", content: "Buat Website Undangan Pernikahan
-Digital dalam Hitungan Menit Dirancang untuk pasangan Indonesia yang menginginkan undangan elegan, romantis, dan berkelas" },
+      { name: "description", content: "Undangan Pernikahan Digital dalam Hitungan" },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Sakinah Web" },
-      { property: "og:description", content: "Buat Website Undangan Pernikahan
-Digital dalam Hitungan Menit Dirancang untuk pasangan Indonesia yang menginginkan undangan elegan, romantis, dan berkelas" },
+      { property: "og:description", content: "Undangan Pernikahan Digital dalam Hitungan" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Sakinah Web" },
-      { name: "twitter:description", content: "Buat Website Undangan Pernikahan
-Digital dalam Hitungan Menit Dirancang untuk pasangan Indonesia yang menginginkan undangan elegan, romantis, dan berkelas" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8a07b528-8b6a-428a-b288-35800d1515ad" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8a07b528-8b6a-428a-b288-35800d1515ad" },
+      { name: "twitter:description", content: "Undangan Pernikahan Digital dalam Hitungan" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0fcb4120-07cf-4b4b-b83d-6e6b3c4e45e4" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0fcb4120-07cf-4b4b-b83d-6e6b3c4e45e4" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
