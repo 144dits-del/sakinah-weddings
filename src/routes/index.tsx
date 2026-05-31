@@ -71,6 +71,7 @@ const faqs = [
 function Landing() {
   const [isSubdomainMode, setIsSubdomainMode] = useState(false);
   const [subdomain, setSubdomain] = useState("");
+  const [demoTheme, setDemoTheme] = useState("sakinah");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -275,6 +276,159 @@ function Landing() {
                 Jelajahi Semua Template
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* LIVE INTERACTIVE DEMO SIMULATOR */}
+      <section className="relative bg-gradient-to-b from-ivory via-cream/30 to-ivory py-24 overflow-hidden border-t border-border/40">
+        <div className="relative mx-auto max-w-7xl px-6">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <p className="text-xs tracking-[0.3em] uppercase text-gold">Live Playground Demo</p>
+            <h2 className="font-display text-4xl md:text-5xl mt-3">Coba Desain Tema Langsung</h2>
+            <p className="mt-4 text-muted-foreground">
+              Rasakan langsung perbedaan kemewahan Tema Klasik Sakinah dengan Tema Monokrom Minimalis modern dalam satu ketukan!
+            </p>
+            <FloralDivider className="mt-5" />
+          </div>
+
+          <div className="grid lg:grid-cols-12 gap-12 items-center max-w-5xl mx-auto">
+            {/* Control Panel (Left Side) */}
+            <div className="lg:col-span-5 space-y-6">
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-md">
+                <h3 className="font-display text-2xl font-bold mb-4">Pengatur Tema Undangan</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                  Pilih salah satu preset tema terpopuler di bawah ini untuk melihat simulasi visual di samping secara real-time.
+                </p>
+
+                <div className="space-y-3">
+                  {/* Option 1: Sakinah Theme */}
+                  <button
+                    onClick={() => setDemoTheme("sakinah")}
+                    className={`w-full text-left p-4 rounded-2xl border transition flex items-center gap-4 ${
+                      demoTheme === "sakinah"
+                        ? "border-gold bg-gold-soft/10 text-foreground ring-1 ring-gold"
+                        : "border-border hover:bg-cream bg-transparent"
+                    }`}
+                  >
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cream to-gold-soft flex items-center justify-center text-xl shadow-sm shrink-0">
+                      🤍
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm">Sakinah Classic Theme</div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">Gold & Cream Floral Elegance</div>
+                    </div>
+                  </button>
+
+                  {/* Option 2: Monochrome Theme */}
+                  <button
+                    onClick={() => setDemoTheme("monochrome")}
+                    className={`w-full text-left p-4 rounded-2xl border transition flex items-center gap-4 ${
+                      demoTheme === "monochrome"
+                        ? "border-zinc-950 bg-zinc-50 text-zinc-900 ring-1 ring-zinc-950"
+                        : "border-border hover:bg-cream bg-transparent"
+                    }`}
+                  >
+                    <div className="h-10 w-10 rounded-none border border-zinc-950 bg-white text-zinc-950 flex items-center justify-center text-xl shadow-sm shrink-0 font-serif font-black">
+                      M
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm">Monochrome Serif Theme</div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">High-Contrast Minimalist Aesthetic</div>
+                    </div>
+                  </button>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-border/60 text-xs text-muted-foreground">
+                  <span className="font-semibold text-gold">💡 Info Paket:</span> Kedua tema estetik di atas tersedia secara gratis pada paket keanggotaan dasar **Basic (Sakinah)**.
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Simulator (Right Side) */}
+            <div className="lg:col-span-7 flex justify-center">
+              <div className={`relative w-full max-w-[340px] aspect-[9/19] rounded-[2.5rem] overflow-hidden border-[10px] shadow-2xl transition duration-500 flex flex-col justify-between ${
+                demoTheme === "monochrome"
+                  ? "border-zinc-950 bg-white"
+                  : "border-foreground bg-background"
+              }`}>
+                
+                {/* Simulated Content */}
+                <div className="flex-1 flex flex-col justify-between p-6 text-center select-none relative overflow-hidden transition-all duration-500">
+                  {/* Decorative Corner Ornaments for Monochrome */}
+                  {demoTheme === "monochrome" && (
+                    <>
+                      <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-zinc-950" />
+                      <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-zinc-950" />
+                      <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-zinc-950" />
+                      <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-zinc-950" />
+                    </>
+                  )}
+
+                  {/* Top Ornament */}
+                  <div className={`mt-6 text-2xl transition duration-500 ${
+                    demoTheme === "monochrome" ? "text-zinc-950 font-serif text-lg" : "text-gold animate-pulse"
+                  }`}>
+                    {demoTheme === "monochrome" ? "✦ ✦ ✦" : "🌸"}
+                  </div>
+
+                  <div className="space-y-4 my-auto">
+                    <div className={`text-[10px] tracking-[0.4em] uppercase transition ${
+                      demoTheme === "monochrome" ? "text-zinc-950 font-bold font-serif" : "text-gold"
+                    }`}>
+                      THE WEDDING OF
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <h3 className={`text-4xl font-extrabold capitalize tracking-tight transition-all duration-500 ${
+                        demoTheme === "monochrome" ? "font-serif text-zinc-950" : "font-display text-foreground"
+                      }`}>
+                        Radit
+                      </h3>
+                      <div className={`text-2xl italic font-semibold transition ${
+                        demoTheme === "monochrome" ? "font-serif text-zinc-950" : "font-display text-gold"
+                      }`}>
+                        &
+                      </div>
+                      <h3 className={`text-4xl font-extrabold capitalize tracking-tight transition-all duration-500 ${
+                        demoTheme === "monochrome" ? "font-serif text-zinc-950" : "font-display text-foreground"
+                      }`}>
+                        Dila
+                      </h3>
+                    </div>
+
+                    <div className="space-y-1 mt-6">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Acara akan diadakan pada:</div>
+                      <div className={`text-xs font-bold transition ${
+                        demoTheme === "monochrome" ? "font-serif text-zinc-950" : "text-foreground font-display"
+                      }`}>
+                        Sabtu, 30 Mei 2026
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Buka Undangan Simulated Button */}
+                  <div className="mt-auto mb-6">
+                    <button className={`w-full py-3 px-6 text-xs transition duration-500 flex items-center justify-center gap-2 ${
+                      demoTheme === "monochrome"
+                        ? "bg-zinc-950 text-white rounded-none border border-zinc-950 hover:bg-zinc-900"
+                        : "bg-gold text-primary-foreground rounded-full hover:bg-gold/90 font-semibold"
+                    }`}>
+                      <Heart className={`h-3.5 w-3.5 ${demoTheme === "monochrome" ? "fill-zinc-950 text-white" : "fill-primary-foreground"}`} />
+                      Buka Undangan Demo
+                    </button>
+                  </div>
+
+                  {/* Bottom Ornament */}
+                  <div className={`text-2xl transition duration-500 ${
+                    demoTheme === "monochrome" ? "text-zinc-950 font-serif text-lg" : "text-gold animate-pulse"
+                  }`}>
+                    {demoTheme === "monochrome" ? "✦ ✦ ✦" : "🌸"}
+                  </div>
+                </div>
+
+              </div>
+            </div>
           </div>
         </div>
       </section>

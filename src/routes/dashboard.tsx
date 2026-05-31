@@ -329,6 +329,7 @@ function Dashboard() {
     }
     setSelectedTemplate(id);
     localStorage.setItem("sakinah_selected_template", id);
+    window.dispatchEvent(new Event("sakinah_template_changed"));
     toast.success(`Berhasil mengaktifkan tema: ${templatesList.find((t) => t.id === id)?.name}`);
   };
 

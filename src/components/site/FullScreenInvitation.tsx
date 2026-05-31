@@ -39,6 +39,32 @@ export default function FullScreenInvitation({
   const [activePkg, setActivePkg] = useState("Sakinah");
   const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [isOpen, setIsOpen] = useState(false);
+
+  const isMonochrome = selectedTemplate === "monochrome";
+
+  const theme = {
+    bg: isMonochrome 
+      ? "bg-gradient-to-b from-zinc-100 via-white to-zinc-100 text-zinc-900" 
+      : "bg-gradient-to-br from-cream via-ivory to-gold-soft/20 text-foreground",
+    coverBg: isMonochrome
+      ? "bg-white text-zinc-900"
+      : "bg-gradient-to-b from-cream via-ivory to-background text-foreground",
+    cardBg: isMonochrome
+      ? "bg-white border-zinc-950 rounded-none border-2 p-5 text-center relative overflow-hidden text-zinc-900"
+      : "rounded-2xl border border-border bg-card p-5 text-center relative overflow-hidden shadow-sm text-foreground",
+    btn: isMonochrome
+      ? "bg-zinc-950 hover:bg-zinc-900 text-white rounded-none border border-zinc-950 cursor-pointer text-xs"
+      : "bg-gold hover:bg-gold/90 text-primary-foreground rounded-full text-xs font-semibold cursor-pointer",
+    btnOutline: isMonochrome
+      ? "border-zinc-950 hover:bg-zinc-100 text-zinc-950 rounded-none border cursor-pointer text-xs bg-white"
+      : "border-border hover:bg-gold-soft/10 text-muted-foreground hover:text-foreground rounded-full text-xs cursor-pointer",
+    textGold: isMonochrome ? "text-zinc-950 font-bold" : "text-gold",
+    fontHead: isMonochrome ? "font-serif" : "font-display",
+    borderGold: isMonochrome ? "border-zinc-950" : "border-gold/15",
+    badge: isMonochrome ? "bg-zinc-950 text-white hover:bg-zinc-950" : "bg-gold text-primary-foreground",
+    avatar: isMonochrome ? "bg-zinc-950 text-white rounded-none border-2 border-zinc-950" : "bg-gradient-to-br from-gold to-gold-soft text-white rounded-full"
+  };
+
   const [activeTab, setActiveTab] = useState("Home");
   const [tabKey, setTabKey] = useState(0); // Digunakan untuk mereset animasi transisi
   const [wishes, setWishes] = useState<any[]>([
@@ -99,13 +125,19 @@ export default function FullScreenInvitation({
     setActivePkg(getStoredPackage());
     setSelectedTemplate(localStorage.getItem("sakinah_selected_template") || "sakinah");
 
-    // Dengarkan jika ada perubahan paket
-    const handlePkgChange = () => {
+    // Dengarkan jika ada perubahan data, paket, atau tema
+    const handleSyncChange = () => {
+      setWedding(getStoredWeddingData());
       setActivePkg(getStoredPackage());
+      setSelectedTemplate(localStorage.getItem("sakinah_selected_template") || "sakinah");
     };
-    window.addEventListener("sakinah_package_changed", handlePkgChange);
+    window.addEventListener("storage", handleSyncChange);
+    window.addEventListener("sakinah_package_changed", handleSyncChange);
+    window.addEventListener("sakinah_template_changed", handleSyncChange);
     return () => {
-      window.removeEventListener("sakinah_package_changed", handlePkgChange);
+      window.removeEventListener("storage", handleSyncChange);
+      window.removeEventListener("sakinah_package_changed", handleSyncChange);
+      window.removeEventListener("sakinah_template_changed", handleSyncChange);
     };
   }, [subdomain]);
 
@@ -184,25 +216,38 @@ export default function FullScreenInvitation({
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-cream via-ivory to-gold-soft/20 flex justify-center items-center py-0 md:py-4 px-0">
+    <div className={`min-h-screen w-full ${isMonochrome ? "bg-zinc-100 text-zinc-900" : "bg-gradient-to-br from-cream via-ivory to-gold-soft/20"} flex justify-center items-center py-0 md:py-4 px-0`}>
       
       {/* Container utama: Terpusat di PC (max-w-md), alami 100% di HP */}
-      <div className="w-full max-w-md bg-background min-h-screen md:min-h-[800px] md:h-[840px] md:rounded-[2rem] overflow-hidden shadow-2xl relative flex flex-col justify-between border border-border/40">
+      <div className={`w-full max-w-md ${isMonochrome ? "bg-white border-2 border-zinc-950 text-zinc-900" : "bg-background border border-border/40 md:rounded-[2rem]"} min-h-screen md:min-h-[800px] md:h-[840px] overflow-hidden shadow-2xl relative flex flex-col justify-between`}>
         
         {/* 1. COVER PAGE (BEFORE OPENING) */}
         {!isOpen ? (
-          <section className="absolute inset-0 z-50 bg-gradient-to-b from-cream via-ivory to-background flex flex-col items-center justify-center text-center p-6 select-none overflow-hidden animate-fade-in">
-            {/* Floral Ornament top */}
-            <div className="absolute top-12 text-gold text-3xl animate-pulse">🌸</div>
+          <section className={`absolute inset-0 z-50 ${theme.coverBg} flex flex-col items-center justify-center text-center p-6 select-none overflow-hidden animate-fade-in`}>
             
-            <div className="text-[10px] tracking-[0.4em] uppercase text-gold font-bold mb-4">THE WEDDING OF</div>
+            {/* Corner border ornaments for Monochrome */}
+            {isMonochrome && (
+              <>
+                <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-zinc-950" />
+                <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-zinc-950" />
+                <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-zinc-950" />
+                <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-zinc-950" />
+              </>
+            )}
+
+            {/* Floral Ornament top / Bintang */}
+            <div className={`absolute top-12 ${isMonochrome ? "text-zinc-950 font-serif text-xl" : "text-gold text-3xl animate-pulse"}`}>
+              {isMonochrome ? "✦ ✦ ✦" : "🌸"}
+            </div>
+            
+            <div className={`text-[10px] tracking-[0.4em] uppercase ${theme.textGold} mb-4`}>THE WEDDING OF</div>
             
             <div className="space-y-2">
-              <h1 className="font-display text-5xl font-black text-foreground capitalize tracking-tight">
+              <h1 className={`${theme.fontHead} text-5xl font-black capitalize tracking-tight`}>
                 {wedding.groom.nickname}
               </h1>
-              <div className="font-display text-3xl text-gold italic my-2 font-semibold">&</div>
-              <h1 className="font-display text-5xl font-black text-foreground capitalize tracking-tight">
+              <div className={`${theme.fontHead} text-3xl ${theme.textGold} italic my-2 font-semibold`}>&</div>
+              <h1 className={`${theme.fontHead} text-5xl font-black capitalize tracking-tight`}>
                 {wedding.bride.nickname}
               </h1>
             </div>
@@ -210,12 +255,12 @@ export default function FullScreenInvitation({
             <div className="mt-8 text-xs text-muted-foreground tracking-wide font-semibold">
               Akan segera melangsungkan pernikahan pada:
             </div>
-            <div className="mt-2 text-base text-foreground font-display font-bold">
+            <div className={`mt-2 text-base font-bold ${theme.fontHead}`}>
               Sabtu, 30 Mei 2026
             </div>
 
             {/* Live Ticking Countdown */}
-            <div className="mt-6 p-4 rounded-2xl bg-gold-soft/30 border border-gold/15 max-w-xs w-full mx-auto">
+            <div className={`mt-6 p-4 max-w-xs w-full mx-auto ${isMonochrome ? "bg-zinc-50 border border-zinc-950 rounded-none" : "rounded-2xl bg-gold-soft/30 border border-gold/15"}`}>
               <div className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold">
                 {countdown.isPast ? "Simulasi Hitung Mundur (Acara Berlalu)" : "Hitung Mundur Acara"}
               </div>
@@ -226,8 +271,8 @@ export default function FullScreenInvitation({
                   { v: countdown.minutes, l: "Menit" },
                   { v: countdown.seconds, l: "Detik" },
                 ].map((item, idx) => (
-                  <div key={idx} className="bg-background/80 rounded-lg p-1.5 text-center">
-                    <div className="font-display text-base font-black text-gold leading-none">
+                  <div key={idx} className={`rounded-lg p-1.5 text-center ${isMonochrome ? "bg-white border border-zinc-950 rounded-none" : "bg-background/80"}`}>
+                    <div className={`${theme.fontHead} text-base font-black ${theme.textGold} leading-none`}>
                       {item.v.toString().padStart(2, "0")}
                     </div>
                     <div className="text-[7px] text-muted-foreground uppercase font-bold mt-1">
@@ -236,20 +281,15 @@ export default function FullScreenInvitation({
                   </div>
                 ))}
               </div>
-              {countdown.isPast && (
-                <div className="text-[8px] text-rose-600 font-bold mt-2 uppercase tracking-wider animate-pulse">
-                  ⚠️ STATUS: ACARA TELAH BERLALU
-                </div>
-              )}
             </div>
 
             {/* Personalized Envelope block for Guests */}
             {guestName && (
-              <div className="mt-8 bg-white/80 backdrop-blur border border-gold/15 p-4 rounded-2xl max-w-xs w-full mx-auto text-xs shadow-sm">
+              <div className={`mt-8 backdrop-blur p-4 max-w-xs w-full mx-auto text-xs shadow-sm ${isMonochrome ? "bg-white border border-zinc-950 rounded-none" : "bg-white/80 border border-gold/15 rounded-2xl"}`}>
                 <div className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1 font-semibold">
                   Kepada Yth. Bapak/Ibu/Saudara/i:
                 </div>
-                <div className="font-display font-bold text-sm text-gold capitalize">
+                <div className={`${theme.fontHead} font-bold text-sm ${theme.textGold} capitalize`}>
                   {guestName}
                 </div>
                 {guestAddress && (
@@ -262,26 +302,38 @@ export default function FullScreenInvitation({
 
             <Button
               onClick={handleBukaUndangan}
-              className="mt-8 bg-gold hover:bg-gold/90 text-primary-foreground font-semibold rounded-full px-8 py-3 shadow-md flex items-center gap-2 group transform hover:scale-105 transition duration-300 text-xs"
+              className={`mt-8 ${theme.btn} px-8 py-5 h-auto flex items-center gap-2 group transform hover:scale-105 transition duration-300`}
             >
-              <Heart className="h-4 w-4 fill-primary-foreground group-hover:scale-125 transition" />
+              <Heart className={`h-4 w-4 ${isMonochrome ? "fill-zinc-950 text-white" : "fill-primary-foreground"} group-hover:scale-125 transition`} />
               Buka Undangan
             </Button>
             
-            <div className="absolute bottom-12 text-gold text-3xl animate-pulse">🌸</div>
+            <div className={`absolute bottom-12 ${isMonochrome ? "text-zinc-950 font-serif text-xl" : "text-gold text-3xl animate-pulse"}`}>
+              {isMonochrome ? "✦ ✦ ✦" : "🌸"}
+            </div>
           </section>
         ) : (
           /* 2. LIVE INVITATION (MAIN INTERACTIVE AREA) */
-          <div className="flex-1 flex flex-col justify-between h-full bg-background overflow-hidden relative">
+          <div className={`flex-1 flex flex-col justify-between h-full ${isMonochrome ? "bg-white text-zinc-900" : "bg-background"} overflow-hidden relative`}>
             
             {/* Tampilan Content Area dengan Animasi transisi tabSlideIn */}
             <div key={tabKey} className={`flex-1 overflow-y-auto scrollbar-none w-full animate-tab-slide ${activePkg === "Sakinah" ? "pb-20" : "pb-16"}`}>
               
               {/* TAB 1: HOME */}
               {activeTab === "Home" && (
-                <section className="bg-gradient-to-b from-cream/40 via-background to-background min-h-full flex flex-col items-center justify-center p-6 text-center select-none py-20">
-                  <div className="text-[9px] tracking-[0.3em] uppercase text-gold font-bold mb-3">THE WEDDING OF</div>
-                  <h1 className="font-display text-4xl font-black text-foreground capitalize leading-tight">
+                <section className={`${isMonochrome ? "bg-white text-zinc-900 relative" : "bg-gradient-to-b from-cream/40 via-background to-background"} min-h-full flex flex-col items-center justify-center p-6 text-center select-none py-20`}>
+                  
+                  {isMonochrome && (
+                    <>
+                      <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-zinc-950" />
+                      <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-zinc-950" />
+                      <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-zinc-950" />
+                      <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-zinc-950" />
+                    </>
+                  )}
+
+                  <div className={`text-[9px] tracking-[0.3em] uppercase ${theme.textGold} mb-3`}>THE WEDDING OF</div>
+                  <h1 className={`${theme.fontHead} text-4xl font-black capitalize leading-tight`}>
                     {wedding.groom.nickname} & {wedding.bride.nickname}
                   </h1>
                   <p className="text-xs text-muted-foreground mt-4 max-w-xs leading-relaxed">
@@ -289,7 +341,7 @@ export default function FullScreenInvitation({
                   </p>
                   
                   {/* Countdown live */}
-                  <div className="my-8 p-4 rounded-2xl bg-gold-soft/20 border border-gold/10 w-full max-w-xs mx-auto">
+                  <div className={`my-8 p-4 w-full max-w-xs mx-auto ${isMonochrome ? "bg-zinc-50 border border-zinc-950 rounded-none" : "rounded-2xl bg-gold-soft/20 border border-gold/10"}`}>
                     <div className="grid grid-cols-4 gap-2">
                       {[
                         { v: countdown.days, l: "Hari" },
@@ -297,8 +349,8 @@ export default function FullScreenInvitation({
                         { v: countdown.minutes, l: "Menit" },
                         { v: countdown.seconds, l: "Detik" },
                       ].map((item, idx) => (
-                        <div key={idx} className="bg-background/80 rounded-xl p-2.5 text-center">
-                          <div className="font-display text-lg font-black text-gold">
+                        <div key={idx} className={`rounded-xl p-2.5 text-center ${isMonochrome ? "bg-white border border-zinc-950 rounded-none" : "bg-background/80"}`}>
+                          <div className={`${theme.fontHead} text-lg font-black ${theme.textGold}`}>
                             {item.v.toString().padStart(2, "0")}
                           </div>
                           <div className="text-[8px] text-muted-foreground uppercase font-bold mt-1">
@@ -312,27 +364,43 @@ export default function FullScreenInvitation({
                   <div className="text-xs text-muted-foreground font-semibold">
                     Sabtu, 30 Mei 2026
                   </div>
-                  <div className="mt-8 text-gold text-2xl">💍</div>
+                  <div className={`mt-8 ${isMonochrome ? "text-zinc-900 font-serif text-xl animate-pulse" : "text-gold text-2xl"}`}>
+                    {isMonochrome ? "✦ ✦ ✦" : "💍"}
+                  </div>
                 </section>
               )}
 
               {/* TAB 2: MEMPELAI */}
               {activeTab === "Mempelai" && (
-                <section className="p-6 space-y-6 text-center py-12">
+                <section className="p-6 space-y-6 text-center py-12 relative">
+                  {isMonochrome && (
+                    <>
+                      <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-zinc-950 pointer-events-none" />
+                      <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-zinc-950 pointer-events-none" />
+                    </>
+                  )}
                   <div className="space-y-2">
-                    <p className="font-display text-xl text-gold font-semibold">Assalamu'alaikum</p>
+                    <p className={`${theme.fontHead} text-xl ${theme.textGold}`}>Assalamu'alaikum</p>
                     <p className="text-xs text-muted-foreground leading-relaxed italic max-w-sm mx-auto">
                       Dengan Rahmat Allah yang Maha Kuasa, InsyaAllah kami akan melangsungkan pernikahan pada:
                     </p>
-                    <p className="text-xs text-foreground font-semibold">Sabtu, 30 Mei 2026</p>
+                    <p className="text-xs font-semibold">Sabtu, 30 Mei 2026</p>
                   </div>
 
                   {/* Profil Pria */}
-                  <div className="bg-cream/20 p-5 rounded-2xl border border-border/60">
-                    <div className="mx-auto h-20 w-20 rounded-full bg-gradient-to-br from-gold to-gold-soft flex items-center justify-center font-display text-xl font-bold text-white mb-3">
+                  <div className={theme.cardBg}>
+                    {isMonochrome && (
+                      <>
+                        <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-zinc-950" />
+                        <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-zinc-950" />
+                        <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-zinc-950" />
+                        <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-zinc-950" />
+                      </>
+                    )}
+                    <div className={`mx-auto h-20 w-20 flex items-center justify-center ${theme.fontHead} text-xl font-bold mb-3 ${theme.avatar}`}>
                       {wedding.groom.nickname.charAt(0).toUpperCase()}
                     </div>
-                    <div className="font-display text-lg font-black capitalize text-foreground">
+                    <div className={`${theme.fontHead} text-lg font-black capitalize`}>
                       {wedding.groom.fullName}
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-1">
@@ -343,11 +411,19 @@ export default function FullScreenInvitation({
                   </div>
 
                   {/* Profil Wanita */}
-                  <div className="bg-cream/20 p-5 rounded-2xl border border-border/60">
-                    <div className="mx-auto h-20 w-20 rounded-full bg-gradient-to-br from-gold to-gold-soft flex items-center justify-center font-display text-xl font-bold text-white mb-3">
+                  <div className={theme.cardBg}>
+                    {isMonochrome && (
+                      <>
+                        <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-zinc-950" />
+                        <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-zinc-950" />
+                        <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-zinc-950" />
+                        <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-zinc-950" />
+                      </>
+                    )}
+                    <div className={`mx-auto h-20 w-20 flex items-center justify-center ${theme.fontHead} text-xl font-bold mb-3 ${theme.avatar}`}>
                       {wedding.bride.nickname.charAt(0).toUpperCase()}
                     </div>
-                    <div className="font-display text-lg font-black capitalize text-foreground">
+                    <div className={`${theme.fontHead} text-lg font-black capitalize`}>
                       {wedding.bride.fullName}
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-1">
@@ -361,56 +437,86 @@ export default function FullScreenInvitation({
 
               {/* TAB 3: UNDANGAN (MENAMPILKAN ACARA & SELURUH FITUR TAMBAHAN SECARA SCROLLABLE) */}
               {activeTab === "Undangan" && (
-                <section className="p-6 space-y-8 py-12">
+                <section className="p-6 space-y-8 py-12 relative">
+                  {isMonochrome && (
+                    <>
+                      <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-zinc-950 pointer-events-none" />
+                      <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-zinc-950 pointer-events-none" />
+                    </>
+                  )}
                   <div className="text-center space-y-2">
-                    <h2 className="font-display text-2xl font-bold text-foreground">Undangan dan Acara</h2>
+                    <h2 className={`${theme.fontHead} text-2xl font-bold`}>Undangan dan Acara</h2>
                     <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
                       Bahagia rasanya apabila anda berkenan hadir dan memberikan doa restu kepada kami. Kami mengundang anda untuk hadir dalam acara resepsi pernikahan kami berikut ini.
                     </p>
                   </div>
 
                   {/* Card Akad Nikah */}
-                  <div className="rounded-2xl border border-border bg-card p-5 text-center relative overflow-hidden shadow-sm">
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gold" />
-                    <h3 className="font-display text-lg font-black text-foreground">Akad Nikah</h3>
+                  <div className={theme.cardBg}>
+                    {!isMonochrome && <div className="absolute top-0 inset-x-0 h-1 bg-gold" />}
+                    {isMonochrome && (
+                      <>
+                        <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-zinc-950" />
+                        <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-zinc-950" />
+                        <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-zinc-950" />
+                        <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-zinc-950" />
+                      </>
+                    )}
+                    <h3 className={`${theme.fontHead} text-lg font-black`}>Akad Nikah</h3>
                     <div className="my-3 flex flex-col items-center justify-center gap-1 text-xs">
-                      <div className="flex items-center gap-1.5 font-semibold text-gold">
+                      <div className={`flex items-center gap-1.5 font-semibold ${theme.textGold}`}>
                         <Calendar className="h-3.5 w-3.5" />
                         Sabtu, 30 Mei 2026
                       </div>
                       <div className="text-muted-foreground">Pukul 14:30 - 14:30 WIB</div>
                     </div>
                     <div className="text-[10px] text-muted-foreground flex justify-center items-start gap-1">
-                      <MapPin className="h-3.5 w-3.5 text-gold shrink-0 mt-0.5" />
+                      <MapPin className={`h-3.5 w-3.5 ${theme.textGold} shrink-0 mt-0.5`} />
                       <span>{wedding.akad.venue}</span>
                     </div>
                   </div>
 
                   {/* Card Resepsi */}
-                  <div className="rounded-2xl border border-border bg-card p-5 text-center relative overflow-hidden shadow-sm">
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gold" />
-                    <h3 className="font-display text-lg font-black text-foreground">Resepsi Pernikahan</h3>
+                  <div className={theme.cardBg}>
+                    {!isMonochrome && <div className="absolute top-0 inset-x-0 h-1 bg-gold" />}
+                    {isMonochrome && (
+                      <>
+                        <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-zinc-950" />
+                        <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-zinc-950" />
+                        <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-zinc-950" />
+                        <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-zinc-950" />
+                      </>
+                    )}
+                    <h3 className={`${theme.fontHead} text-lg font-black`}>Resepsi Pernikahan</h3>
                     <div className="my-3 flex flex-col items-center justify-center gap-1 text-xs">
-                      <div className="flex items-center gap-1.5 font-semibold text-gold">
+                      <div className={`flex items-center gap-1.5 font-semibold ${theme.textGold}`}>
                         <Calendar className="h-3.5 w-3.5" />
                         Minggu, 31 Mei 2026
                       </div>
                       <div className="text-muted-foreground">Pukul 14:30 - 14:30 WIB</div>
                     </div>
                     <div className="text-[10px] text-muted-foreground flex justify-center items-start gap-1">
-                      <MapPin className="h-3.5 w-3.5 text-gold shrink-0 mt-0.5" />
+                      <MapPin className={`h-3.5 w-3.5 ${theme.textGold} shrink-0 mt-0.5`} />
                       <span>{wedding.resepsi.venue}</span>
                     </div>
                   </div>
 
                   {/* 1. SECT: CERITA CINTA (INLINE) */}
-                  <div className="border-t border-border/60 pt-6 space-y-4">
-                    <h3 className="font-display text-xl font-bold text-center text-foreground flex items-center justify-center gap-1.5">
-                      💖 Kisah Cinta Kami
+                  <div className={`border-t ${theme.borderGold} pt-6 space-y-4`}>
+                    <h3 className={`${theme.fontHead} text-xl font-bold text-center flex items-center justify-center gap-1.5`}>
+                      {isMonochrome ? "✦ Kisah Cinta Kami" : "💖 Kisah Cinta Kami"}
                     </h3>
                     {isFeatureLocked("Cerita") ? (
-                      <div className="bg-cream/40 border border-gold/15 p-5 rounded-2xl text-center space-y-3">
-                        <Lock className="h-5 w-5 text-gold mx-auto" />
+                      <div className={theme.cardBg}>
+                        {isMonochrome && (
+                          <>
+                            <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-zinc-950" />
+                            <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-zinc-950" />
+                            <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-zinc-950" />
+                            <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-zinc-950" />
+                          </>
+                        )}
+                        <Lock className={`h-5 w-5 mx-auto ${theme.textGold}`} />
                         <div className="text-xs font-semibold">Fitur Cerita Terkunci</div>
                         <p className="text-[10px] text-muted-foreground leading-relaxed">
                           Fitur Cerita Cinta terkunci pada paket Sakinah. Upgrade untuk mengaktifkannya.
@@ -424,13 +530,13 @@ export default function FullScreenInvitation({
                   </div>
 
                   {/* 2. SECT: FOTO GALERI (INLINE) */}
-                  <div className="border-t border-border/60 pt-6 space-y-4">
-                    <h3 className="font-display text-xl font-bold text-center text-foreground flex items-center justify-center gap-1.5">
-                      📸 Galeri Foto Bahagia
+                  <div className={`border-t ${theme.borderGold} pt-6 space-y-4`}>
+                    <h3 className={`${theme.fontHead} text-xl font-bold text-center flex items-center justify-center gap-1.5`}>
+                      {isMonochrome ? "✦ Galeri Foto Bahagia" : "📸 Galeri Foto Bahagia"}
                     </h3>
                     <div className="grid grid-cols-2 gap-2">
                       {Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="aspect-square rounded-xl bg-gradient-to-br from-cream to-gold-soft/30 border border-gold/10 flex items-center justify-center text-[9px] text-muted-foreground font-semibold">
+                        <div key={i} className={`aspect-square flex items-center justify-center text-[9px] text-muted-foreground font-semibold ${isMonochrome ? "bg-white border border-zinc-950 rounded-none" : "rounded-xl bg-gradient-to-br from-cream to-gold-soft/30 border border-gold/10"}`}>
                           Foto Galeri {i + 1}
                         </div>
                       ))}
@@ -438,13 +544,21 @@ export default function FullScreenInvitation({
                   </div>
 
                   {/* 3. SECT: KADO NIKAH (INLINE) */}
-                  <div className="border-t border-border/60 pt-6 space-y-4">
-                    <h3 className="font-display text-xl font-bold text-center text-foreground flex items-center justify-center gap-1.5">
-                      🎁 Kado Digital (Cashless)
+                  <div className={`border-t ${theme.borderGold} pt-6 space-y-4`}>
+                    <h3 className={`${theme.fontHead} text-xl font-bold text-center flex items-center justify-center gap-1.5`}>
+                      {isMonochrome ? "✦ Kado Digital (Cashless)" : "🎁 Kado Digital (Cashless)"}
                     </h3>
                     {isFeatureLocked("Kado") ? (
-                      <div className="bg-cream/40 border border-gold/15 p-5 rounded-2xl text-center space-y-3">
-                        <Lock className="h-5 w-5 text-gold mx-auto" />
+                      <div className={theme.cardBg}>
+                        {isMonochrome && (
+                          <>
+                            <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-zinc-950" />
+                            <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-zinc-950" />
+                            <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-zinc-950" />
+                            <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-zinc-950" />
+                          </>
+                        )}
+                        <Lock className={`h-5 w-5 mx-auto ${theme.textGold}`} />
                         <div className="text-xs font-semibold">Fitur Kado Terkunci</div>
                         <p className="text-[10px] text-muted-foreground">
                           Kado digital eksklusif hanya aktif mulai paket Mawaddah.
@@ -458,13 +572,21 @@ export default function FullScreenInvitation({
                   </div>
 
                   {/* 4. SECT: DOA DAN HARAPAN (INLINE) */}
-                  <div className="border-t border-border/60 pt-6 space-y-4">
-                    <h3 className="font-display text-xl font-bold text-center text-foreground flex items-center justify-center gap-1.5">
-                      💬 Doa & Harapan Tamu
+                  <div className={`border-t ${theme.borderGold} pt-6 space-y-4`}>
+                    <h3 className={`${theme.fontHead} text-xl font-bold text-center flex items-center justify-center gap-1.5`}>
+                      {isMonochrome ? "✦ Doa & Harapan Tamu" : "💬 Doa & Harapan Tamu"}
                     </h3>
                     {isFeatureLocked("Ucapan") ? (
-                      <div className="bg-cream/40 border border-gold/15 p-5 rounded-2xl text-center space-y-3">
-                        <Lock className="h-5 w-5 text-gold mx-auto" />
+                      <div className={theme.cardBg}>
+                        {isMonochrome && (
+                          <>
+                            <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-zinc-950" />
+                            <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-zinc-950" />
+                            <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-zinc-950" />
+                            <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-zinc-950" />
+                          </>
+                        )}
+                        <Lock className={`h-5 w-5 mx-auto ${theme.textGold}`} />
                         <div className="text-xs font-semibold">Fitur Doa & RSVP Terkunci</div>
                         <p className="text-[10px] text-muted-foreground">
                           Tersedia mulai dari paket keanggotaan Mawaddah.
@@ -473,14 +595,14 @@ export default function FullScreenInvitation({
                     ) : (
                       <div className="space-y-4">
                         {/* Form Doa */}
-                        <form onSubmit={handleSendWish} className="space-y-3 bg-cream/10 p-4 rounded-xl border border-border text-xs">
+                        <form onSubmit={handleSendWish} className={`space-y-3 p-4 text-xs ${isMonochrome ? "bg-white border border-zinc-950 rounded-none" : "bg-cream/10 rounded-xl border border-border"}`}>
                           <div className="space-y-1">
                             <Label className="text-[9px]">Nama Anda</Label>
                             <Input
                               value={wishName}
                               onChange={(e) => setWishName(e.target.value)}
                               placeholder="Nama lengkap..."
-                              className="text-xs h-8 bg-background"
+                              className={`text-xs h-8 bg-background ${isMonochrome ? "rounded-none border-zinc-950" : ""}`}
                             />
                           </div>
                           <div className="space-y-1">
@@ -489,11 +611,11 @@ export default function FullScreenInvitation({
                               value={wishText}
                               onChange={(e) => setWishText(e.target.value)}
                               placeholder="Tulis ucapan selamat..."
-                              className="text-xs"
+                              className={`text-xs ${isMonochrome ? "rounded-none border-zinc-950" : ""}`}
                               rows={2}
                             />
                           </div>
-                          <Button type="submit" className="w-full bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full h-8 font-semibold">
+                          <Button type="submit" className={`w-full ${theme.btn} h-8 py-0 flex items-center justify-center font-semibold`}>
                             Kirim Doa Restu
                           </Button>
                         </form>
@@ -501,10 +623,10 @@ export default function FullScreenInvitation({
                         {/* List Doa */}
                         <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                           {wishes.map((w, idx) => (
-                            <div key={idx} className="p-3 bg-muted/30 rounded-lg border border-border/60 text-[10px] space-y-1">
-                              <div className="font-bold text-foreground flex justify-between items-center">
+                            <div key={idx} className={`p-3 text-[10px] space-y-1 ${isMonochrome ? "bg-white border border-zinc-950 rounded-none" : "bg-muted/30 rounded-lg border border-border/60"}`}>
+                              <div className="font-bold flex justify-between items-center">
                                 <span>{w.name}</span>
-                                <Badge className="text-[7px] h-3.5 bg-gold-soft/40 text-gold font-bold px-1.5">{w.relation || "Teman"}</Badge>
+                                <Badge className={`text-[7px] h-3.5 font-bold px-1.5 ${theme.badge}`}>{w.relation || "Teman"}</Badge>
                               </div>
                               <p className="text-muted-foreground">"{w.text}"</p>
                             </div>
@@ -518,28 +640,34 @@ export default function FullScreenInvitation({
 
               {/* TAB 4: MAP */}
               {activeTab === "Map" && (
-                <section className="p-6 space-y-6 py-12">
+                <section className="p-6 space-y-6 py-12 relative">
+                  {isMonochrome && (
+                    <>
+                      <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-zinc-950 pointer-events-none" />
+                      <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-zinc-950 pointer-events-none" />
+                    </>
+                  )}
                   <div className="text-center mb-2">
-                    <h2 className="font-display text-2xl font-bold text-foreground">Peta Lokasi Acara</h2>
+                    <h2 className={`${theme.fontHead} text-2xl font-bold`}>Peta Lokasi Acara</h2>
                   </div>
 
                   {/* Lokasi Akad */}
                   <div className="space-y-2">
                     <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Lokasi Akad Nikah</h3>
-                    <div className="rounded-xl border border-border p-4 space-y-3 bg-muted/20">
+                    <div className={`p-4 space-y-3 ${isMonochrome ? "bg-white border border-zinc-950 rounded-none" : "rounded-xl border border-border bg-muted/20"}`}>
                       {isMapAddressUnset(wedding.akad.venue) ? (
                         <div className="text-xs text-muted-foreground text-center py-4 italic">Peta belum diatur</div>
                       ) : (
                         <>
-                          <div className="text-xs font-semibold text-foreground flex items-start gap-1.5">
-                            <MapPin className="h-3.5 w-3.5 text-gold shrink-0 mt-0.5" />
+                          <div className="text-xs font-semibold flex items-start gap-1.5">
+                            <MapPin className={`h-3.5 w-3.5 shrink-0 mt-0.5 ${theme.textGold}`} />
                             {wedding.akad.venue}
                           </div>
                           {renderMapPreview(wedding.akad.venue, wedding.akad.maps)}
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            className="w-full text-xs rounded-full cursor-pointer hover:bg-gold-soft"
+                            className={`w-full ${theme.btnOutline} py-2 h-auto`}
                             onClick={() => {
                               const url = wedding.akad.maps && wedding.akad.maps.startsWith("http") 
                                 ? wedding.akad.maps 
@@ -557,20 +685,20 @@ export default function FullScreenInvitation({
                   {/* Lokasi Resepsi */}
                   <div className="space-y-2 pt-2">
                     <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Lokasi Resepsi Pernikahan</h3>
-                    <div className="rounded-xl border border-border p-4 space-y-3 bg-muted/20">
+                    <div className={`p-4 space-y-3 ${isMonochrome ? "bg-white border border-zinc-950 rounded-none" : "rounded-xl border border-border bg-muted/20"}`}>
                       {isMapAddressUnset(wedding.resepsi.venue) ? (
                         <div className="text-xs text-muted-foreground text-center py-4 italic">Peta belum diatur</div>
                       ) : (
                         <>
-                          <div className="text-xs font-semibold text-foreground flex items-start gap-1.5">
-                            <MapPin className="h-3.5 w-3.5 text-gold shrink-0 mt-0.5" />
+                          <div className="text-xs font-semibold flex items-start gap-1.5">
+                            <MapPin className={`h-3.5 w-3.5 shrink-0 mt-0.5 ${theme.textGold}`} />
                             {wedding.resepsi.venue}
                           </div>
                           {renderMapPreview(wedding.resepsi.venue, wedding.resepsi.maps)}
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            className="w-full text-xs rounded-full cursor-pointer hover:bg-gold-soft"
+                            className={`w-full ${theme.btnOutline} py-2 h-auto`}
                             onClick={() => {
                               const url = wedding.resepsi.maps && wedding.resepsi.maps.startsWith("http") 
                                 ? wedding.resepsi.maps 
@@ -589,7 +717,7 @@ export default function FullScreenInvitation({
             </div>
 
             {/* FIXED BOTTOM NAVIGATION BAR (MAKSIMAL 4 NAVIGASI KUNCI) */}
-            <nav className={`absolute inset-x-0 z-30 h-14 bg-background border-t border-border flex items-center justify-around text-[10px] font-bold text-muted-foreground shadow-[0_-2px_10px_rgba(0,0,0,0.05)] select-none ${activePkg === "Sakinah" ? "bottom-5" : "bottom-0"}`}>
+            <nav className={`absolute inset-x-0 z-30 h-14 border-t flex items-center justify-around text-[10px] font-bold shadow-[0_-2px_10px_rgba(0,0,0,0.05)] select-none ${isMonochrome ? "bg-white border-zinc-950 text-zinc-900" : "bg-background border-border text-muted-foreground"} ${activePkg === "Sakinah" ? "bottom-5" : "bottom-0"}`}>
               {[
                 { tab: "Home", icon: HomeIcon },
                 { tab: "Mempelai", icon: Users },
@@ -602,11 +730,11 @@ export default function FullScreenInvitation({
                     key={item.tab}
                     onClick={() => handleTabChange(item.tab)}
                     className={`flex flex-col items-center justify-center gap-0.5 w-16 h-full transition relative
-                      ${isActive ? "text-gold" : "hover:text-foreground"}`}
+                      ${isActive ? (isMonochrome ? "text-zinc-950 font-black" : "text-gold") : (isMonochrome ? "text-zinc-400 hover:text-zinc-900 font-normal" : "hover:text-foreground")}`}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.tab}</span>
-                    {isActive && <span className="absolute bottom-1 w-4 h-0.5 rounded-full bg-gold" />}
+                    {isActive && <span className={`absolute bottom-1 w-4 h-0.5 rounded-full ${isMonochrome ? "bg-zinc-950" : "bg-gold"}`} />}
                   </button>
                 );
               })}
@@ -614,8 +742,8 @@ export default function FullScreenInvitation({
 
             {/* WATERMARK KHUSUS PAKET GRATIS (SAKINAH) DI BAWAH BOTTOM BAR */}
             {activePkg === "Sakinah" && (
-              <div className="absolute bottom-0 inset-x-0 z-30 h-5 bg-rose-50 dark:bg-rose-950/30 border-t border-rose-100 dark:border-rose-900/40 flex items-center justify-center text-[8px] font-semibold text-rose-600 select-none">
-                Undangan ini dibuat gratis menggunakan <span className="font-bold ml-1 text-rose-700 dark:text-rose-400">sakinahweb.lovable.app</span>
+              <div className={`absolute bottom-0 inset-x-0 z-30 h-5 border-t flex items-center justify-center text-[8px] font-semibold select-none ${isMonochrome ? "bg-zinc-100 border-zinc-200 text-zinc-600" : "bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-950/30 dark:border-rose-900/40"}`}>
+                Undangan ini dibuat gratis menggunakan <span className={`font-bold ml-1 ${isMonochrome ? "text-zinc-900" : "text-rose-700 dark:text-rose-400"}`}>sakinahweb.lovable.app</span>
               </div>
             )}
 
