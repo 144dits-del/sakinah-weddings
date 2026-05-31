@@ -48,24 +48,23 @@ export const templates: Template[] = [
 ];
 
 export const packages: Package[] = [
-  { id: "p1", name: "Gratis Sakinah", price: 0, features: ["Template gratis", "Subdomain sakinahweb.id", "RSVP dasar", "Galeri 10 foto"] },
-  { id: "p2", name: "Premium", price: 89000, originalPrice: 100000, highlight: true, features: ["Semua template premium", "Subdomain custom", "RSVP unlimited", "Galeri unlimited", "Musik pilihan", "Kado digital", "Wedding wall"] },
-  { id: "p3", name: "Eksklusif", price: 199000, features: ["Semua fitur Premium", "Domain .com sendiri", "Custom design", "Priority support", "Video galeri"] },
+  { id: "p1", name: "Sakinah", price: 0, features: ["Gratis, selamanya", "Template gratis", "Subdomain sakinahweb.id", "RSVP dasar", "Galeri 10 foto"] },
+  { id: "p2", name: "Mawaddah", price: 89000, originalPrice: 100000, highlight: true, features: ["Sekali bayar", "Paling populer", "Semua template premium", "Subdomain custom", "RSVP unlimited", "Galeri unlimited", "Musik pilihan", "Kado digital", "Wedding wall"] },
+  { id: "p3", name: "Warahmah", price: 199000, features: ["Sekali bayar", "Eksklusif", "Semua fitur Mawaddah", "Domain .com sendiri", "Custom design", "Priority support", "Video galeri", "Video undangan"] },
 ];
 
 export const transactions: Transaction[] = [
-  { id: "TRX001", user: "Raditya Anwar", package: "Premium", amount: 89000, status: "success", date: "2026-05-28" },
-  { id: "TRX002", user: "Siti Nurhaliza", package: "Eksklusif", amount: 199000, status: "pending", date: "2026-05-29" },
-  { id: "TRX003", user: "Budi Santoso", package: "Premium", amount: 89000, status: "success", date: "2026-05-29" },
-  { id: "TRX004", user: "Dewi Lestari", package: "Premium", amount: 89000, status: "failed", date: "2026-05-30" },
-  { id: "TRX005", user: "Andi Wijaya", package: "Eksklusif", amount: 199000, status: "success", date: "2026-05-30" },
+  { id: "TRX001", user: "adbi", package: "Mawaddah", amount: 89000, status: "success", date: "2026-05-28" },
+  { id: "TRX002", user: "Dewi Lestari", package: "Warahmah", amount: 199000, status: "pending", date: "2026-05-29" },
+  { id: "TRX003", user: "Budi Santoso", package: "Mawaddah", amount: 89000, status: "success", date: "2026-05-29" },
+  { id: "TRX004", user: "Dewi Lestari", package: "Mawaddah", amount: 89000, status: "failed", date: "2026-05-30" },
+  { id: "TRX005", user: "Andi Wijaya", package: "Warahmah", amount: 199000, status: "success", date: "2026-05-30" },
 ];
 
 export const users = [
-  { id: "u1", name: "Raditya Anwar", email: "raditya@mail.com", package: "Premium", joined: "2026-05-20" },
-  { id: "u2", name: "Siti Nurhaliza", email: "siti@mail.com", package: "Eksklusif", joined: "2026-05-22" },
-  { id: "u3", name: "Budi Santoso", email: "budi@mail.com", package: "Gratis", joined: "2026-05-25" },
-  { id: "u4", name: "Dewi Lestari", email: "dewi@mail.com", package: "Premium", joined: "2026-05-28" },
+  { id: "u1", name: "adbi", email: "adbi@mail.com", package: "Mawaddah", joined: "2026-05-20" },
+  { id: "u2", name: "Dewi Lestari", email: "dewi@mail.com", package: "Mawaddah", joined: "2026-05-22" },
+  { id: "u3", name: "Budi Santoso", email: "budi@mail.com", package: "Sakinah", joined: "2026-05-25" },
 ];
 
 export const adminStats = {
@@ -76,13 +75,46 @@ export const adminStats = {
 };
 
 export const dummyWedding: WeddingData = {
-  subdomain: "raditya-aisyah",
-  groom: { fullName: "Raditya Anwar Pratama", nickname: "Raditya", father: "Bapak Anwar Pratama", mother: "Ibu Siti Aminah" },
-  bride: { fullName: "Aisyah Nur Hidayah", nickname: "Aisyah", father: "Bapak Hidayat", mother: "Ibu Nurul" },
+  subdomain: "di-ra",
+  groom: { fullName: "adbi", nickname: "bibi", father: "adsa", mother: "rara" },
+  bride: { fullName: "rara", nickname: "rarw", father: "rwqwq", mother: "rrwr" },
   religion: "Islam",
   timezone: "WIB",
-  akad: { date: "2026-08-15", start: "08:00", end: "10:00", venue: "Masjid Al-Ikhlas, Jl. Melati No.12, Bandung" },
-  resepsi: { date: "2026-08-15", start: "11:00", end: "14:00", venue: "Gedung Sasana Budaya, Jl. Asia Afrika No.8, Bandung" },
+  akad: { date: "2026-05-30", start: "14:30", end: "14:30", venue: "sda" },
+  resepsi: { date: "2026-05-31", start: "14:30", end: "14:30", venue: "21e21dsad" },
+};
+
+export const STORAGE_KEY = "sakinah_wedding_data";
+export const PACKAGE_STORAGE_KEY = "sakinah_active_package";
+
+export const getStoredWeddingData = (): WeddingData => {
+  if (typeof window === "undefined") return dummyWedding;
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return dummyWedding;
+};
+
+export const setStoredWeddingData = (data: WeddingData) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+};
+
+export const getStoredPackage = (): string => {
+  if (typeof window === "undefined") return "Sakinah";
+  return localStorage.getItem(PACKAGE_STORAGE_KEY) || "Sakinah";
+};
+
+export const setStoredPackage = (pkg: string) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(PACKAGE_STORAGE_KEY, pkg);
+  }
 };
 
 export const formatRupiah = (n: number) => "Rp" + n.toLocaleString("id-ID");

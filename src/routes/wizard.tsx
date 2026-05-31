@@ -14,12 +14,12 @@ const steps = ["Subdomain", "Nama Mempelai", "Informasi Acara", "Selesai"];
 function Wizard() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState({
-    subdomain: "raditya-aisyah",
-    groom: { fullName: "", nickname: "", father: "", mother: "" },
-    bride: { fullName: "", nickname: "", father: "", mother: "" },
+    subdomain: "di-ra",
+    groom: { fullName: "adbi", nickname: "bibi", father: "adsa", mother: "rara" },
+    bride: { fullName: "rara", nickname: "rarw", father: "rwqwq", mother: "rrwr" },
     religion: "Islam", timezone: "WIB",
-    akad: { date: "", start: "", end: "", venue: "" },
-    resepsi: { date: "", start: "", end: "", venue: "" },
+    akad: { date: "2026-05-30", start: "14:30", end: "14:30", venue: "sda" },
+    resepsi: { date: "2026-05-31", start: "14:30", end: "14:30", venue: "21e21dsad" },
   });
 
   const upd = (path: string, v: string) => {
@@ -120,8 +120,8 @@ function Wizard() {
               <h2 className="font-display text-3xl">Selesai!</h2>
               <p className="text-muted-foreground">Undangan kalian siap dibagikan.</p>
               <div className="text-left rounded-xl bg-muted/40 p-4 text-sm space-y-1.5">
-                <div><span className="text-muted-foreground">URL:</span> <b>{data.subdomain || "raditya-aisyah"}.sakinahweb.id</b></div>
-                <div><span className="text-muted-foreground">Mempelai:</span> <b>{data.groom.nickname || "Raditya"} & {data.bride.nickname || "Aisyah"}</b></div>
+                <div><span className="text-muted-foreground">URL:</span> <b>{data.subdomain || "di-ra"}.sakinahweb.id</b></div>
+                <div><span className="text-muted-foreground">Mempelai:</span> <b>{data.groom.nickname || "bibi"} & {data.bride.nickname || "rarw"}</b></div>
                 <div><span className="text-muted-foreground">Akad:</span> <b>{data.akad.date || "—"} {data.akad.start && `(${data.akad.start})`}</b></div>
                 <div><span className="text-muted-foreground">Resepsi:</span> <b>{data.resepsi.date || "—"} {data.resepsi.start && `(${data.resepsi.start})`}</b></div>
               </div>

@@ -28,10 +28,10 @@ const UNS_COUPLE_3 = "https://images.unsplash.com/photo-1519225421980-715cb0215a
 const UNS_FLORAL_BG = "https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=1600&q=80";
 
 const TEMPLATES = [
-  { id: "t1", name: "Anggrek Putih", type: "Premium", img: "https://images.unsplash.com/photo-1525772764200-be829a350797?auto=format&fit=crop&w=600&q=80" },
-  { id: "t2", name: "Mawar Champagne", type: "Premium", img: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80" },
-  { id: "t3", name: "Melati Klasik", type: "Gratis", img: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=600&q=80" },
-  { id: "t4", name: "Sage Garden", type: "Premium", img: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=600&q=80" },
+  { id: "t1", name: "Anggrek Putih", type: "Mawaddah", img: "https://images.unsplash.com/photo-1525772764200-be829a350797?auto=format&fit=crop&w=600&q=80" },
+  { id: "t2", name: "Mawar Champagne", type: "Mawaddah", img: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80" },
+  { id: "t3", name: "Melati Klasik", type: "Sakinah", img: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=600&q=80" },
+  { id: "t4", name: "Sage Garden", type: "Mawaddah", img: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=600&q=80" },
 ];
 
 const features = [
@@ -53,15 +53,15 @@ const reasons = [
 const trustLogos = ["Bridestory", "Pernikahan.com", "The Knot ID", "Wedding Market", "Bridestyle"];
 
 const testimonials = [
-  { n: "Raditya & Aisyah", c: "Bandung", q: "Tamu kami kagum dengan undangannya. Elegan banget dan fitur RSVP-nya sangat membantu.", img: UNS_COUPLE_1 },
+  { n: "Radit & Dila", c: "Bandung", q: "Tamu kami kagum dengan undangannya. Elegan banget dan fitur RSVP-nya sangat membantu.", img: UNS_COUPLE_1 },
   { n: "Andi & Sari", c: "Jakarta", q: "Prosesnya sangat cepat. Dalam 30 menit undangan sudah siap dibagikan ke 200 tamu.", img: UNS_COUPLE_2 },
   { n: "Budi & Dewi", c: "Surabaya", q: "Template premiumnya benar-benar worth it. Suasana romantisnya terasa sekali.", img: UNS_COUPLE_3 },
 ];
 
 const faqs = [
-  { q: "Berapa lama undangan saya aktif?", a: "Pada paket Premium dan Eksklusif, undangan aktif selamanya. Paket Gratis aktif selama 1 bulan." },
+  { q: "Berapa lama undangan saya aktif?", a: "Pada paket Mawaddah dan Warahmah, undangan aktif selamanya. Paket Sakinah aktif selama 1 bulan." },
   { q: "Bisakah mengganti template setelah membuat?", a: "Tentu bisa, kapan saja melalui dashboard tanpa biaya tambahan." },
-  { q: "Apakah tersedia domain custom?", a: "Ya, paket Eksklusif termasuk domain .com pribadi untuk undangan kalian." },
+  { q: "Apakah tersedia domain custom?", a: "Ya, paket Warahmah termasuk domain .com pribadi untuk undangan kalian." },
   { q: "Bagaimana metode pembayarannya?", a: "Kami menerima transfer bank, e-wallet (OVO, GoPay, Dana), dan QRIS." },
   { q: "Apakah ada batasan jumlah tamu?", a: "Tidak. Semua paket memberikan undangan dengan jumlah tamu unlimited." },
 ];
@@ -129,8 +129,8 @@ function Landing() {
                   <img src={UNS_HERO} alt="Pasangan menikah" className="absolute inset-0 h-full w-full object-cover" />
                   <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent text-background">
                     <div className="text-[10px] tracking-[0.3em] uppercase opacity-80">The Wedding Of</div>
-                    <div className="font-display text-3xl mt-1 italic">Raditya & Aisyah</div>
-                    <div className="text-xs mt-1 opacity-90">15 Agustus 2026</div>
+                    <div className="font-display text-3xl mt-1 italic">Radit & Dila</div>
+                    <div className="text-xs mt-1 opacity-90">30 Mei 2026</div>
                   </div>
                 </div>
               </div>
@@ -141,10 +141,10 @@ function Landing() {
                   <div className="relative h-2/3 bg-gradient-to-b from-blush-soft to-cream flex flex-col items-center justify-center text-center px-3">
                     <Heart className="h-4 w-4 text-blush mb-2" />
                     <div className="text-[8px] tracking-[0.25em] text-gold">THE WEDDING OF</div>
-                    <div className="font-display text-xl leading-tight mt-1">Raditya</div>
+                    <div className="font-display text-xl leading-tight mt-1">Radit</div>
                     <div className="font-display text-sm text-gold italic">&</div>
-                    <div className="font-display text-xl leading-tight">Aisyah</div>
-                    <div className="text-[8px] text-muted-foreground mt-2">15 · 08 · 2026</div>
+                    <div className="font-display text-xl leading-tight">Dila</div>
+                    <div className="text-[8px] text-muted-foreground mt-2">30 · 05 · 2026</div>
                   </div>
                   <div className="p-2 space-y-1.5">
                     {[60, 80, 40].map((w, i) => (
