@@ -65,6 +65,7 @@ export const users = [
   { id: "u1", name: "adbi", email: "adbi@mail.com", package: "Mawaddah", joined: "2026-05-20" },
   { id: "u2", name: "Dewi Lestari", email: "dewi@mail.com", package: "Mawaddah", joined: "2026-05-22" },
   { id: "u3", name: "Budi Santoso", email: "budi@mail.com", package: "Sakinah", joined: "2026-05-25" },
+  { id: "u4", name: "dits144 (Admin)", email: "dits144@gmail.com", package: "Warahmah", joined: "2026-06-01" },
 ];
 
 export const adminStats = {
