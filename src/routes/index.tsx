@@ -4,6 +4,8 @@ import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { FloralCorner, FloralDivider, FloralSprig } from "@/components/site/Florals";
 import { packages, formatRupiah } from "@/lib/dummy-data";
+import { useState, useEffect } from "react";
+import FullScreenInvitation from "@/components/site/FullScreenInvitation";
 import {
   ArrowRight, Heart, Globe, Image as ImageIcon, Music, Gift, MessageCircle,
   Sparkle, Users, Check, Star, Calendar, Lock, ShieldCheck, Zap, HeartHandshake,
@@ -67,6 +69,34 @@ const faqs = [
 ];
 
 function Landing() {
+  const [isSubdomainMode, setIsSubdomainMode] = useState(false);
+  const [subdomain, setSubdomain] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hostname = window.location.hostname;
+      const searchParams = new URLSearchParams(window.location.search);
+      const querySub = searchParams.get("subdomain");
+
+      if (querySub) {
+        setIsSubdomainMode(true);
+        setSubdomain(querySub);
+      } else if (
+        hostname.includes(".sakinahweb.id") &&
+        !hostname.startsWith("www.") &&
+        hostname !== "sakinahweb.id"
+      ) {
+        const sub = hostname.split(".")[0];
+        setIsSubdomainMode(true);
+        setSubdomain(sub);
+      }
+    }
+  }, []);
+
+  if (isSubdomainMode) {
+    return <FullScreenInvitation subdomain={subdomain} />;
+  }
+
   return (
     <div className="min-h-screen bg-ivory text-foreground">
       <Navbar />
