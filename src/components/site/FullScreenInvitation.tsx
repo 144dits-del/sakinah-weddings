@@ -37,6 +37,7 @@ export default function FullScreenInvitation({
 }: FullScreenInvitationProps) {
   const [wedding, setWedding] = useState<WeddingData>(getStoredWeddingData());
   const [activePkg, setActivePkg] = useState("Sakinah");
+  const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
   const [tabKey, setTabKey] = useState(0); // Digunakan untuk mereset animasi transisi
@@ -96,6 +97,7 @@ export default function FullScreenInvitation({
     const storedData = getStoredWeddingData();
     setWedding(storedData);
     setActivePkg(getStoredPackage());
+    setSelectedTemplate(localStorage.getItem("sakinah_selected_template") || "sakinah");
 
     // Dengarkan jika ada perubahan paket
     const handlePkgChange = () => {

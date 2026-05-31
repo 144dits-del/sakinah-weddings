@@ -31,6 +31,7 @@ export const Route = createFileRoute("/preview")({
 function Preview() {
   const [wedding, setWedding] = useState<WeddingData>(getStoredWeddingData());
   const [activePkg, setActivePkg] = useState("Sakinah");
+  const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
   const [tabKey, setTabKey] = useState(0); // Trigger tab slide-in transition
@@ -89,6 +90,7 @@ function Preview() {
   useEffect(() => {
     setWedding(getStoredWeddingData());
     setActivePkg(getStoredPackage());
+    setSelectedTemplate(localStorage.getItem("sakinah_selected_template") || "sakinah");
 
     // Dengarkan perubahan jika user mengubah sesuatu di dashboard
     const handleStorageChange = () => {
