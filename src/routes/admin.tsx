@@ -60,6 +60,7 @@ function Admin() {
   const [usersList, setUsersList] = useState<any[]>([]);
   const [transactionsList, setTransactionsList] = useState<any[]>([]);
   const [templatesList, setTemplatesList] = useState<any[]>([]);
+  const [websitesList, setWebsitesList] = useState<any[]>([]);
 
   // Search filter states
   const [userQuery, setUserQuery] = useState("");
@@ -76,10 +77,16 @@ function Admin() {
     const storedUsers = localStorage.getItem("sakinah_admin_users");
     const storedTxs = localStorage.getItem("sakinah_admin_txs");
     const storedTmpls = localStorage.getItem("sakinah_admin_tmpls");
+    const storedWebs = localStorage.getItem("sakinah_admin_webs");
 
     setUsersList(storedUsers ? JSON.parse(storedUsers) : defaultUsers);
     setTransactionsList(storedTxs ? JSON.parse(storedTxs) : defaultTransactions);
     setTemplatesList(storedTmpls ? JSON.parse(storedTmpls) : defaultTemplates);
+    setWebsitesList(storedWebs ? JSON.parse(storedWebs) : [
+      { sub: "di-ra", groom: "bibi", bride: "rarw", pkg: "Mawaddah", status: "Aktif", date: "30 Mei 2026" },
+      { sub: "andisari", groom: "Andi", bride: "Sari", pkg: "Warahmah", status: "Aktif", date: "28 Mei 2026" },
+      { sub: "budidewi", groom: "Budi", bride: "Dewi", pkg: "Sakinah", status: "Expired", date: "20 Mei 2026" },
+    ]);
   }, []);
 
   const handleSaveUsers = (next: any[]) => {
@@ -95,6 +102,28 @@ function Admin() {
   const handleSaveTemplates = (next: any[]) => {
     setTemplatesList(next);
     localStorage.setItem("sakinah_admin_tmpls", JSON.stringify(next));
+  };
+
+  const handleSaveWebsites = (next: any[]) => {
+    setWebsitesList(next);
+    localStorage.setItem("sakinah_admin_webs", JSON.stringify(next));
+  };
+
+  const handleToggleWebsiteStatus = (sub: string) => {
+    const next = websitesList.map((w) => {
+      if (w.sub === sub) {
+        const nextStatus = w.status === "Aktif" ? "Expired" : "Aktif";
+        return { ...w, status: nextStatus };
+      }
+      return w;
+    });
+    handleSaveWebsites(next);
+    const updatedStatus = next.find(w => w.sub === sub)?.status;
+    if (updatedStatus === "Aktif") {
+      toast.success(`Website ${sub}.sakinahweb.id berhasil diaktifkan kembali! 🚀`);
+    } else {
+      toast.error(`Website ${sub}.sakinahweb.id dinonaktifkan (Expired).`);
+    }
   };
 
   // Actions
@@ -618,11 +647,7 @@ function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { sub: "di-ra", groom: "bibi", bride: "rarw", pkg: "Mawaddah", status: "Aktif", date: "30 Mei 2026" },
-                    { sub: "andisari", groom: "Andi", bride: "Sari", pkg: "Warahmah", status: "Aktif", date: "28 Mei 2026" },
-                    { sub: "budidewi", groom: "Budi", bride: "Dewi", pkg: "Sakinah", status: "Expired", date: "20 Mei 2026" },
-                  ]
+                  {websitesList
                     .filter((w) => w.sub.toLowerCase().includes(webQuery.toLowerCase()))
                     .map((w, idx) => (
                       <tr key={idx} className="border-b border-border/40 last:border-0 hover:bg-muted/25">
@@ -632,12 +657,20 @@ function Admin() {
                         </td>
                         <td className="p-3 font-semibold text-muted-foreground">{w.pkg}</td>
                         <td className="p-3">
-                          <Badge variant={w.status === "Aktif" ? "default" : "destructive"} className="text-[8px] uppercase">
+                          <Badge variant={w.status === "Aktif" ? "default" : "destructive"} className="text-[8px] uppercase font-semibold">
                             {w.status}
                           </Badge>
                         </td>
                         <td className="p-3 text-muted-foreground">{w.date}</td>
-                        <td className="p-3 text-right">
+                        <td className="p-3 text-right flex justify-end gap-1.5 items-center">
+                          <Button
+                            size="sm"
+                            variant={w.status === "Aktif" ? "secondary" : "default"}
+                            className="text-[9px] h-7 rounded-full px-3"
+                            onClick={() => handleToggleWebsiteStatus(w.sub)}
+                          >
+                            {w.status === "Aktif" ? "Nonaktifkan" : "Aktifkan"}
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"
