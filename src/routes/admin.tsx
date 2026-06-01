@@ -59,6 +59,12 @@ const menu = [
 function Admin() {
   const { tab } = Route.useSearch();
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  
+  // Admin Login Portal States
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [isSubmittingAdmin, setIsSubmittingAdmin] = useState(false);
+
   const [usersList, setUsersList] = useState<any[]>([]);
   const [transactionsList, setTransactionsList] = useState<any[]>([]);
   const [templatesList, setTemplatesList] = useState<any[]>([]);
@@ -80,11 +86,7 @@ function Admin() {
     const role = localStorage.getItem("sakinah_user_role");
     if (role !== "admin") {
       setIsAuthorized(false);
-      toast.error("Akses ditolak! Silakan masuk sebagai Admin.");
-      const timer = setTimeout(() => {
-        window.location.href = "/login";
-      }, 1500);
-      return () => clearTimeout(timer);
+      return;
     }
     setIsAuthorized(true);
 
@@ -110,6 +112,38 @@ function Admin() {
     setTimeout(() => {
       window.location.href = "/login";
     }, 1000);
+  };
+
+  const handleAdminLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingAdmin(true);
+    
+    setTimeout(() => {
+      if (adminEmail.trim() === "dits144@gmail.com") {
+        localStorage.setItem("sakinah_user_email", adminEmail.trim());
+        localStorage.setItem("sakinah_user_role", "admin");
+        setIsAuthorized(true);
+        toast.success("Autentikasi Admin Berhasil! Selamat datang kembali.");
+        
+        // Trigger loading stored states in-place
+        const storedUsers = localStorage.getItem("sakinah_admin_users");
+        const storedTxs = localStorage.getItem("sakinah_admin_txs");
+        const storedTmpls = localStorage.getItem("sakinah_admin_tmpls");
+        const storedWebs = localStorage.getItem("sakinah_admin_webs");
+
+        setUsersList(storedUsers ? JSON.parse(storedUsers) : defaultUsers);
+        setTransactionsList(storedTxs ? JSON.parse(storedTxs) : defaultTransactions);
+        setTemplatesList(storedTmpls ? JSON.parse(storedTmpls) : defaultTemplates);
+        setWebsitesList(storedWebs ? JSON.parse(storedWebs) : [
+          { sub: "di-ra", groom: "bibi", bride: "rarw", pkg: "Mawaddah", status: "Aktif", date: "30 Mei 2026" },
+          { sub: "andisari", groom: "Andi", bride: "Sari", pkg: "Warahmah", status: "Aktif", date: "28 Mei 2026" },
+          { sub: "budidewi", groom: "Budi", bride: "Dewi", pkg: "Sakinah", status: "Expired", date: "20 Mei 2026" },
+        ]);
+      } else {
+        toast.error("Akses Ditolak! Kredensial administrator tidak valid.");
+      }
+      setIsSubmittingAdmin(false);
+    }, 800);
   };
 
   const handleSaveUsers = (next: any[]) => {
@@ -246,20 +280,59 @@ function Admin() {
 
   if (isAuthorized === false) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center p-6 max-w-sm mx-auto">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <Toaster position="top-right" richColors />
-        <ShieldAlert className="h-16 w-16 text-rose-500 mb-4 animate-bounce" />
-        <h1 className="font-display text-2xl font-bold text-foreground">Akses Ditolak!</h1>
-        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          Anda tidak memiliki hak akses administrator untuk melihat halaman ini. Silakan masuk terlebih dahulu menggunakan akun admin.
-        </p>
-        <div className="mt-6 flex flex-col gap-2 w-full">
-          <Button onClick={() => window.location.href = "/login"} className="bg-gold hover:bg-gold/90 text-primary-foreground font-semibold rounded-full w-full">
-            Masuk sebagai Admin
-          </Button>
-          <Button onClick={() => window.location.href = "/"} variant="outline" className="rounded-full w-full">
-            Kembali ke Landing Page
-          </Button>
+        <div className="w-full max-w-md bg-card border border-border rounded-3xl p-8 shadow-xl space-y-6 relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-gold via-yellow-500 to-amber-600" />
+          <div className="text-center space-y-2">
+            <div className="mx-auto h-12 w-12 rounded-full bg-gold/15 flex items-center justify-center text-gold mb-2">
+              <ShieldAlert className="h-6 w-6" />
+            </div>
+            <h1 className="font-display text-2xl font-bold text-foreground">SakinahWeb Admin Portal</h1>
+            <p className="text-xs text-muted-foreground">Silakan masuk menggunakan akun Administrator Anda</p>
+          </div>
+          
+          <form onSubmit={handleAdminLoginSubmit} className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Email Administrator</Label>
+              <Input
+                type="email"
+                placeholder="admin@sakinahweb.id"
+                value={adminEmail}
+                onChange={(e) => setAdminEmail(e.target.value)}
+                required
+                className="text-xs rounded-xl h-10 border-border bg-muted/20"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Kata Sandi / PIN</Label>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                required
+                className="text-xs rounded-xl h-10 border-border bg-muted/20"
+              />
+            </div>
+            
+            <Button
+              type="submit"
+              disabled={isSubmittingAdmin}
+              className="w-full bg-gold hover:bg-gold/90 text-primary-foreground font-semibold rounded-full h-10 mt-2 transition cursor-pointer"
+            >
+              {isSubmittingAdmin ? "Memverifikasi..." : "Autentikasi & Masuk"}
+            </Button>
+          </form>
+          
+          <div className="text-center pt-2">
+            <button
+              onClick={() => window.location.href = "/"}
+              className="text-[10px] text-muted-foreground hover:text-foreground hover:underline transition bg-transparent border-0 cursor-pointer"
+            >
+              ← Kembali ke Landing Page
+            </button>
+          </div>
         </div>
       </div>
     );
