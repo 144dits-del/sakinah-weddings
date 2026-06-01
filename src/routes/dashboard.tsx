@@ -91,6 +91,7 @@ const templatesList = [
 
 function Dashboard() {
   const { tab } = Route.useSearch();
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [activePkg, setActivePkg] = useState("Sakinah");
   const [weddingData, setWeddingData] = useState<WeddingData>(getStoredWeddingData());
   const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
@@ -160,6 +161,18 @@ function Dashboard() {
 
   // Muat data saat load
   useEffect(() => {
+    // Keamanan: Cek apakah user telah login
+    const email = localStorage.getItem("sakinah_user_email");
+    if (!email) {
+      setIsAuthorized(false);
+      toast.error("Akses ditolak! Silakan masuk ke akun Anda terlebih dahulu.");
+      const timer = setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+    setIsAuthorized(true);
+
     const data = getStoredWeddingData();
     setWeddingData(data);
     setActivePkg(getStoredPackage());
@@ -416,6 +429,37 @@ function Dashboard() {
       </div>
     );
   };
+
+  if (isAuthorized === null) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center p-6 select-none">
+        <Toaster position="top-right" richColors />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold mb-3" />
+        <span className="text-xs text-muted-foreground font-semibold">Memuat Keamanan...</span>
+      </div>
+    );
+  }
+
+  if (isAuthorized === false) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center p-6 max-w-sm mx-auto">
+        <Toaster position="top-right" richColors />
+        <ShieldAlert className="h-16 w-16 text-rose-500 mb-4 animate-bounce" />
+        <h1 className="font-display text-2xl font-bold text-foreground">Akses Ditolak!</h1>
+        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+          Silakan masuk ke akun Anda terlebih dahulu untuk dapat mengelola undangan pernikahan Anda di Dashboard.
+        </p>
+        <div className="mt-6 flex flex-col gap-2 w-full">
+          <Button onClick={() => window.location.href = "/login"} className="bg-gold hover:bg-gold/90 text-primary-foreground font-semibold rounded-full w-full">
+            Masuk ke Akun
+          </Button>
+          <Button onClick={() => window.location.href = "/"} variant="outline" className="rounded-full w-full">
+            Kembali ke Landing Page
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">

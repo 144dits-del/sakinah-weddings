@@ -58,6 +58,7 @@ const menu = [
 
 function Admin() {
   const { tab } = Route.useSearch();
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [usersList, setUsersList] = useState<any[]>([]);
   const [transactionsList, setTransactionsList] = useState<any[]>([]);
   const [templatesList, setTemplatesList] = useState<any[]>([]);
@@ -75,6 +76,18 @@ function Admin() {
 
   // Load central state from localStorage or fallback
   useEffect(() => {
+    // Keamanan: Cek apakah user adalah admin
+    const role = localStorage.getItem("sakinah_user_role");
+    if (role !== "admin") {
+      setIsAuthorized(false);
+      toast.error("Akses ditolak! Silakan masuk sebagai Admin.");
+      const timer = setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+    setIsAuthorized(true);
+
     const storedUsers = localStorage.getItem("sakinah_admin_users");
     const storedTxs = localStorage.getItem("sakinah_admin_txs");
     const storedTmpls = localStorage.getItem("sakinah_admin_tmpls");
@@ -89,6 +102,15 @@ function Admin() {
       { sub: "budidewi", groom: "Budi", bride: "Dewi", pkg: "Sakinah", status: "Expired", date: "20 Mei 2026" },
     ]);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("sakinah_user_email");
+    localStorage.removeItem("sakinah_user_role");
+    toast.success("Berhasil keluar.");
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1000);
+  };
 
   const handleSaveUsers = (next: any[]) => {
     setUsersList(next);
@@ -212,6 +234,37 @@ function Admin() {
     });
   };
 
+  if (isAuthorized === null) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center p-6 select-none">
+        <Toaster position="top-right" richColors />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold mb-3" />
+        <span className="text-xs text-muted-foreground font-semibold">Memuat Keamanan...</span>
+      </div>
+    );
+  }
+
+  if (isAuthorized === false) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center p-6 max-w-sm mx-auto">
+        <Toaster position="top-right" richColors />
+        <ShieldAlert className="h-16 w-16 text-rose-500 mb-4 animate-bounce" />
+        <h1 className="font-display text-2xl font-bold text-foreground">Akses Ditolak!</h1>
+        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+          Anda tidak memiliki hak akses administrator untuk melihat halaman ini. Silakan masuk terlebih dahulu menggunakan akun admin.
+        </p>
+        <div className="mt-6 flex flex-col gap-2 w-full">
+          <Button onClick={() => window.location.href = "/login"} className="bg-gold hover:bg-gold/90 text-primary-foreground font-semibold rounded-full w-full">
+            Masuk sebagai Admin
+          </Button>
+          <Button onClick={() => window.location.href = "/"} variant="outline" className="rounded-full w-full">
+            Kembali ke Landing Page
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   const stats = [
     { i: Users, l: "Total User", v: adminStats.totalUsers.toLocaleString("id-ID") },
     { i: Globe, l: "Website Aktif", v: adminStats.activeWebsites.toLocaleString("id-ID") },
@@ -246,12 +299,12 @@ function Admin() {
               {m}
             </Link>
           ))}
-          <Link
-            to="/login"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 mt-2 font-medium"
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 mt-2 font-medium text-left cursor-pointer border-0 bg-transparent"
           >
             <LogOut className="h-4 w-4" /> Keluar
-          </Link>
+          </button>
         </nav>
       </aside>
 

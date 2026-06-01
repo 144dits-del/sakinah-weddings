@@ -70,6 +70,12 @@ export function UserSidebar({ active = "Dashboard" }: { active?: string }) {
     window.dispatchEvent(new Event("sakinah_package_changed"));
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("sakinah_user_email");
+    localStorage.removeItem("sakinah_user_role");
+    window.location.href = "/login";
+  };
+
   const isFeatureLocked = (m: string) => {
     const req = packageRequirements[m];
     if (!req) return false;
@@ -134,12 +140,12 @@ export function UserSidebar({ active = "Dashboard" }: { active?: string }) {
             </Link>
           );
         })}
-        <Link
-          to="/login"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 mt-2 text-xs font-medium"
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 mt-2 text-xs font-medium text-left cursor-pointer border-0 bg-transparent"
         >
           <LogOut className="h-4 w-4" /> Keluar
-        </Link>
+        </button>
       </nav>
     </aside>
   );
