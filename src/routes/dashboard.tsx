@@ -85,6 +85,8 @@ const templatesList = [
   { id: "blossom", name: "Blossom Celebration", type: "Premium", bg: "from-pink-50 to-rose-100", icon: "🌸" },
   { id: "chic", name: "Chic Floral", type: "Premium", bg: "from-teal-50 to-cyan-100", icon: "💐", popular: true },
   { id: "bloom_bliss", name: "Bloom Bliss Theme", type: "Premium", bg: "from-indigo-50 to-violet-100", icon: "🔮" },
+  { id: "t9", name: "Nikah Monochrome", type: "Premium", bg: "from-zinc-800 to-zinc-950", icon: "🖤", popular: true },
+  { id: "t10", name: "Nikah Sakinah", type: "Premium", bg: "from-amber-100 via-stone-50 to-amber-50", icon: "🦢", popular: true },
 ];
 
 function Dashboard() {

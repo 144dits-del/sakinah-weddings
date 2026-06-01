@@ -40,17 +40,18 @@ export default function FullScreenInvitation({
   const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [isOpen, setIsOpen] = useState(false);
 
-  const isMonochrome = selectedTemplate === "monochrome" || selectedTemplate === "basic" || selectedTemplate === "t6";
+  const isMonochrome = selectedTemplate === "monochrome" || selectedTemplate === "basic" || selectedTemplate === "t6" || selectedTemplate === "t9";
 
   const getTheme = (id: string) => {
     const norm = id.toLowerCase();
-    const isMono = norm === "monochrome" || norm === "basic" || norm === "t6";
+    const isMono = norm === "monochrome" || norm === "basic" || norm === "t6" || norm === "t9";
     const isRose = norm === "rose_red" || norm === "t2" || norm === "blossom" || norm === "bliss";
     const isMawaddah = norm === "t3" || norm === "chic";
     const isLuxury = norm === "dark_gold" || norm === "dark_gold_2" || norm === "t4";
     const isGarden = norm === "bloom" || norm === "t5" || norm === "bloom_bliss" || norm === "blossom_celebration";
     const isRoyal = norm === "t7";
     const isSweet = norm === "t8" || norm === "blossom";
+    const isSakinah = norm === "t10";
 
     if (isMono) {
       return {
@@ -65,6 +66,22 @@ export default function FullScreenInvitation({
         badge: "bg-zinc-950 text-white hover:bg-zinc-950",
         avatar: "bg-zinc-950 text-white rounded-none border-2 border-zinc-950",
         emoji: "✦ ✦ ✦"
+      };
+    }
+
+    if (isSakinah) {
+      return {
+        bg: "bg-gradient-to-br from-[#f8f5f0] via-[#fdfbf7] to-[#eedfc2]/40 text-stone-900",
+        coverBg: "bg-gradient-to-b from-[#f8f5f0] via-[#fdfbf7] to-background text-stone-900",
+        cardBg: "rounded-[2rem] border border-[#8c7853]/30 bg-white/95 p-6 text-center relative overflow-hidden shadow-md text-stone-900",
+        btn: "bg-[#8c7853] hover:bg-[#726241] text-white rounded-full text-xs font-semibold cursor-pointer border-0",
+        btnOutline: "border-[#8c7853]/40 hover:bg-[#8c7853]/10 text-[#8c7853] rounded-full text-xs cursor-pointer bg-white",
+        textGold: "text-[#8c7853] font-bold",
+        fontHead: "font-display",
+        borderGold: "border-[#8c7853]/20",
+        badge: "bg-[#8c7853] text-white",
+        avatar: "bg-gradient-to-br from-[#bda87f] to-[#8c7853] text-white rounded-full",
+        emoji: "🦢"
       };
     }
 
@@ -352,12 +369,44 @@ export default function FullScreenInvitation({
               </>
             )}
 
-            {/* Floral Ornament top / Bintang */}
-            <div className={`absolute top-12 ${isMonochrome ? "text-zinc-950 font-serif text-xl" : "text-gold text-3xl animate-pulse"}`}>
-              {isMonochrome ? "✦ ✦ ✦" : "🌸"}
+            {/* Floral branch ornaments for t10 (Sakinah Theme) */}
+            {selectedTemplate === "t10" && (
+              <>
+                <div className="absolute top-0 left-0 w-24 h-24 pointer-events-none select-none opacity-90 animate-fade-in">
+                  <svg viewBox="0 0 100 100" className="fill-[#8c7853]/25 w-full h-full">
+                    <path d="M 0 0 C 40 10, 80 50, 100 100 C 60 80, 20 40, 0 0 Z" />
+                    <circle cx="20" cy="30" r="3" fill="#8c7853" opacity="0.4" />
+                    <circle cx="45" cy="55" r="4" fill="#8c7853" opacity="0.3" />
+                  </svg>
+                </div>
+                <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none select-none opacity-90 animate-fade-in">
+                  <svg viewBox="0 0 100 100" className="fill-[#8c7853]/25 w-full h-full -scale-x-100">
+                    <path d="M 0 0 C 40 10, 80 50, 100 100 C 60 80, 20 40, 0 0 Z" />
+                    <circle cx="20" cy="30" r="3" fill="#8c7853" opacity="0.4" />
+                    <circle cx="45" cy="55" r="4" fill="#8c7853" opacity="0.3" />
+                  </svg>
+                </div>
+                <div className="absolute bottom-0 inset-x-0 h-16 pointer-events-none select-none opacity-80 flex items-end justify-center">
+                  <div className="w-full h-8 bg-gradient-to-t from-[#8c7853]/10 to-transparent relative">
+                    <div className="absolute bottom-1 left-4 w-12 h-6 border-t border-[#8c7853]/30 rounded-t-full" />
+                    <div className="absolute bottom-1 right-4 w-12 h-6 border-t border-[#8c7853]/30 rounded-t-full" />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Hiasan Bunga Mini / Bintang */}
+            <div className={`absolute top-12 ${isMonochrome ? "text-zinc-950 font-serif text-xl" : "text-[#8c7853] text-2xl animate-pulse"}`}>
+              {selectedTemplate === "t10" ? "🕊️" : isMonochrome ? "✦ ✦ ✦" : "🌸"}
             </div>
             
             <div className={`text-[10px] tracking-[0.4em] uppercase ${theme.textGold} mb-4`}>THE WEDDING OF</div>
+
+            {selectedTemplate === "t10" && (
+              <div className="mb-4 animate-bounce duration-1000">
+                <span className="text-4xl">🕊️</span>
+              </div>
+            )}
             
             <div className="space-y-2">
               <h1 className={`${theme.fontHead} text-5xl font-black capitalize tracking-tight`}>
