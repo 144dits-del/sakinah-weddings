@@ -176,7 +176,7 @@ function Dashboard() {
     const data = getStoredWeddingData();
     setWeddingData(data);
     setActivePkg(getStoredPackage());
-    setSelectedTemplate(localStorage.getItem("sakinah_selected_template") || "sakinah");
+    setSelectedTemplate((data.subdomain && localStorage.getItem(`sakinah_selected_template_${data.subdomain}`)) || localStorage.getItem("sakinah_selected_template") || "sakinah");
     setSelectedMusic(localStorage.getItem("sakinah_selected_music") || "Beautiful - Instrumental");
 
     // Muat data domain & SEO
@@ -344,6 +344,9 @@ function Dashboard() {
     }
     setSelectedTemplate(id);
     localStorage.setItem("sakinah_selected_template", id);
+    if (weddingData.subdomain) {
+      localStorage.setItem(`sakinah_selected_template_${weddingData.subdomain}`, id);
+    }
     window.dispatchEvent(new Event("sakinah_template_changed"));
     toast.success(`Berhasil mengaktifkan tema: ${templatesList.find((t) => t.id === id)?.name}`);
   };

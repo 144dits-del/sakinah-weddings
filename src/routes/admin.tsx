@@ -33,6 +33,23 @@ import {
   Sliders,
   Database,
   Search,
+  Folder,
+  File,
+  FileCode,
+  ChevronRight,
+  ChevronDown,
+  Edit,
+  Copy,
+  Eye,
+  Code,
+  Smartphone,
+  Terminal,
+  Heart,
+  MapPin,
+  Calendar,
+  Gift,
+  MessageCircle,
+  Volume2,
 } from "lucide-react";
 
 // Register Route with TanStack Router query params
@@ -49,11 +66,196 @@ const menu = [
   "Dashboard",
   "User",
   "Template",
+  "Template Builder",
+  "File Template",
+  "Komponen Template",
+  "Preview Template",
   "Transaksi",
   "Paket Harga",
   "Website Undangan",
   "Pembayaran",
   "Pengaturan",
+];
+
+const initialFileContents: Record<string, string> = {
+  "templates/sakinah/index.json": `{
+  "name": "sakinah",
+  "version": "1.0.0",
+  "description": "Template Sakinah Classic dengan ornamen floral elegan",
+  "author": "SakinahWeb Team"
+}`,
+  "templates/sakinah/config.json": `{
+  "templateName": "Sakinah",
+  "category": "Basic",
+  "isPremium": false,
+  "layout": "mobile-wedding",
+  "sections": ["cover", "couple", "event", "map", "story", "gallery", "wishes"]
+}`,
+  "templates/sakinah/preview.png": "[Binary Image Asset Preview]",
+  "templates/sakinah/sections/CoverSection.tsx": `import React from 'react';
+import { Heart } from 'lucide-react';
+
+export default function CoverSection({ groom, bride, event }) {
+  return (
+    <div className="min-h-[400px] flex flex-col justify-center items-center bg-cream/30 text-stone-800 p-6 relative text-center">
+      <div className="absolute top-12 text-[#8c7853] text-2xl animate-pulse">🕊️</div>
+      <div className="text-[10px] tracking-[0.4em] uppercase text-[#8c7853] mb-4">THE WEDDING OF</div>
+      <h1 className="font-display text-4xl font-black">{{groom.nickName}} & {{bride.nickName}}</h1>
+      <p className="mt-8 text-xs text-muted-foreground">Akan melangsungkan pernikahan pada:</p>
+      <div className="mt-2 text-sm font-bold">{{event.akad.date}}</div>
+    </div>
+  );
+}`,
+  "templates/sakinah/sections/CoupleSection.tsx": `import React from 'react';
+
+export default function CoupleSection({ groom, bride }) {
+  return (
+    <div className="p-6 text-center space-y-6 bg-white">
+      <h2 className="font-display text-2xl text-[#8c7853]">Kedua Mempelai</h2>
+      <div className="p-4 border rounded-2xl bg-[#f8f5f0]/40 shadow-sm">
+        <h3 className="font-bold text-lg">{{groom.fullName}}</h3>
+        <p className="text-xs text-muted-foreground">Putra dari {{groom.fatherName}} & {{groom.motherName}}</p>
+      </div>
+      <div className="text-xl text-[#8c7853] italic">&</div>
+      <div className="p-4 border rounded-2xl bg-[#f8f5f0]/40 shadow-sm">
+        <h3 className="font-bold text-lg">{{bride.fullName}}</h3>
+        <p className="text-xs text-muted-foreground">Putri dari {{bride.fatherName}} & {{bride.motherName}}</p>
+      </div>
+    </div>
+  );
+}`,
+  "templates/sakinah/sections/EventSection.tsx": `import React from 'react';
+
+export default function EventSection({ event }) {
+  return (
+    <div className="p-6 text-center space-y-6 bg-[#fdfbf7]">
+      <h2 className="font-display text-2xl text-[#8c7853]">Informasi Acara</h2>
+      <div className="p-4 border rounded-2xl bg-white shadow-sm">
+        <h3 className="font-bold">Akad Nikah</h3>
+        <p className="text-xs">{{event.akad.date}}</p>
+        <p className="text-xs">{{event.akad.time}}</p>
+        <p className="text-xs text-muted-foreground">{{event.akad.location}}</p>
+      </div>
+      <div className="p-4 border rounded-2xl bg-white shadow-sm">
+        <h3 className="font-bold">Resepsi</h3>
+        <p className="text-xs">{{event.resepsi.date}}</p>
+        <p className="text-xs">{{event.resepsi.time}}</p>
+        <p className="text-xs text-muted-foreground">{{event.resepsi.location}}</p>
+      </div>
+    </div>
+  );
+}`,
+  "templates/sakinah/sections/MapSection.tsx": `import React from 'react';
+import { MapPin } from 'lucide-react';
+
+export default function MapSection({ event }) {
+  return (
+    <div className="p-6 text-center space-y-4 bg-white">
+      <h2 className="font-display text-2xl text-[#8c7853]">Lokasi Acara</h2>
+      <div className="h-40 rounded-xl bg-muted flex flex-col items-center justify-center p-4">
+        <MapPin className="h-8 w-8 text-[#8c7853]" />
+        <span className="text-xs font-semibold mt-2">{{event.akad.location}}</span>
+      </div>
+    </div>
+  );
+}`,
+  "templates/sakinah/sections/StorySection.tsx": `import React from 'react';
+
+export default function StorySection({ story }) {
+  return (
+    <div className="p-6 space-y-4 bg-[#fdfbf7]">
+      <h2 className="font-display text-2xl text-[#8c7853] text-center">Cerita Cinta</h2>
+      <div className="space-y-4 text-left">
+        <div className="border-l-2 border-[#8c7853] pl-4 py-1">
+          <h4 className="font-semibold text-sm">Pertama Kali Berjumpa</h4>
+          <p className="text-[10px] text-muted-foreground">16 Oktober 2014</p>
+          <p className="text-xs mt-1 text-stone-600">Pertama kali berjumpa di kampus.</p>
+        </div>
+      </div>
+    </div>
+  );
+}`,
+  "templates/sakinah/sections/GallerySection.tsx": `import React from 'react';
+
+export default function GallerySection({ gallery }) {
+  return (
+    <div className="p-6 space-y-4 bg-white">
+      <h2 className="font-display text-2xl text-[#8c7853] text-center">Galeri Kebahagiaan</h2>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="aspect-square bg-muted rounded-xl flex items-center justify-center text-xs">
+          Foto 1
+        </div>
+        <div className="aspect-square bg-muted rounded-xl flex items-center justify-center text-xs">
+          Foto 2
+        </div>
+      </div>
+    </div>
+  );
+}`,
+  "templates/sakinah/sections/WishesSection.tsx": `import React from 'react';
+
+export default function WishesSection({ wishes }) {
+  return (
+    <div className="p-6 space-y-4 bg-[#fdfbf7]">
+      <h2 className="font-display text-2xl text-[#8c7853] text-center">Doa & Ucapan</h2>
+      <div className="space-y-2 text-left">
+        <div className="p-3 bg-white rounded-xl border border-border/60 text-xs">
+          <div className="font-bold">Budi & Ani</div>
+          <p className="text-muted-foreground mt-1">"Selamat menempuh hidup baru!"</p>
+        </div>
+      </div>
+    </div>
+  );
+}`,
+  "templates/sakinah/sections/GiftSection.tsx": `import React from 'react';
+
+export default function GiftSection({ gift }) {
+  return (
+    <div className="p-6 text-center space-y-4 bg-white">
+      <h2 className="font-display text-2xl text-[#8c7853]">Kirim Kado</h2>
+      <div className="p-4 border rounded-xl bg-[#f8f5f0]/40 text-xs">
+        <div className="font-bold text-[#8c7853]">Bank Syariah Indonesia</div>
+        <div>No. Rekening: 12345678910</div>
+        <div>a.n. Adi & Rara</div>
+      </div>
+    </div>
+  );
+}`,
+  "templates/sakinah/styles/theme.css": `/* Sakinah Classic Theme CSS Rules */
+:root {
+  --primary-color: #8c7853;
+  --primary-hover: #726241;
+  --accent-color: #eedfc2;
+  --background-color: #f8f5f0;
+  --text-color: #292524;
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--primary-color);
+}`,
+  "templates/sakinah/assets/background.jpg": "[Binary Image Background Asset]",
+  "templates/sakinah/assets/flower.png": "[Binary Image Flower PNG Asset]",
+  "templates/sakinah/assets/music.mp3": "[Audio Background Music MP3]"
+};
+
+const initialComponents = [
+  { id: "c1", name: "Cover Section", tag: "cover", file: "CoverSection.tsx", status: "Aktif" },
+  { id: "c2", name: "Mempelai Section", tag: "couple", file: "CoupleSection.tsx", status: "Aktif" },
+  { id: "c3", name: "Acara Section", tag: "event", file: "EventSection.tsx", status: "Aktif" },
+  { id: "c4", name: "Map Section", tag: "map", file: "MapSection.tsx", status: "Aktif" },
+  { id: "c5", name: "Cerita Cinta Section", tag: "story", file: "StorySection.tsx", status: "Aktif" },
+  { id: "c6", name: "Galeri Section", tag: "gallery", file: "GallerySection.tsx", status: "Aktif" },
+  { id: "c7", name: "Doa Ucapan Section", tag: "wishes", file: "WishesSection.tsx", status: "Aktif" },
+  { id: "c8", name: "Kado Nikah Section", tag: "gift", file: "GiftSection.tsx", status: "Aktif" },
 ];
 
 function Admin() {
@@ -80,6 +282,39 @@ function Admin() {
   const [newTemplateType, setNewTemplateType] = useState("premium");
   const [newTemplateIcon, setNewTemplateIcon] = useState("✨");
 
+  // ================= ADMIN TEMPLATE BUILDER STATES =================
+  const [selectedFile, setSelectedFile] = useState("templates/sakinah/config.json");
+  const [fileContents, setFileContents] = useState<Record<string, string>>({});
+  const [editorContent, setEditorContent] = useState("");
+  
+  // Folder tree expansion states
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
+    "templates": true,
+    "templates/sakinah": true,
+    "templates/sakinah/sections": true,
+    "templates/sakinah/styles": true,
+    "templates/sakinah/assets": false
+  });
+
+  // Settings Panel States (Form Kanan)
+  const [tmplName, setTmplName] = useState("Sakinah");
+  const [tmplCategory, setTmplCategory] = useState("Basic");
+  const [tmplStatus, setTmplStatus] = useState("Aktif");
+  const [tmplMinPackage, setTmplMinPackage] = useState("Sakinah");
+  const [tmplPrimaryColor, setTmplPrimaryColor] = useState("#8c7853");
+  const [tmplAccentColor, setTmplAccentColor] = useState("#eedfc2");
+  const [tmplFontHeading, setTmplFontHeading] = useState("Outfit");
+  const [tmplFontBody, setTmplFontBody] = useState("Inter");
+  const [tmplThumbnail, setTmplThumbnail] = useState("🦢");
+
+  // Komponen list states
+  const [componentsList, setComponentsList] = useState<any[]>([]);
+
+  // Selected Template for Previewing
+  const [previewTemplateId, setPreviewTemplateId] = useState("t1");
+  const [mobilePreviewTab, setMobilePreviewTab] = useState("Home");
+  const [previewModePhone, setPreviewModePhone] = useState(true);
+
   // Load central state from localStorage or fallback
   useEffect(() => {
     // Keamanan: Cek apakah user adalah admin
@@ -95,6 +330,11 @@ function Admin() {
     const storedTmpls = localStorage.getItem("sakinah_admin_tmpls");
     const storedWebs = localStorage.getItem("sakinah_admin_webs");
 
+    // Load templates builder states
+    const storedFiles = localStorage.getItem("sakinah_admin_files");
+    const storedComps = localStorage.getItem("sakinah_admin_comps");
+    const storedSettings = localStorage.getItem("sakinah_admin_builder_settings");
+
     setUsersList(storedUsers ? JSON.parse(storedUsers) : defaultUsers);
     setTransactionsList(storedTxs ? JSON.parse(storedTxs) : defaultTransactions);
     setTemplatesList(storedTmpls ? JSON.parse(storedTmpls) : defaultTemplates);
@@ -103,6 +343,26 @@ function Admin() {
       { sub: "andisari", groom: "Andi", bride: "Sari", pkg: "Warahmah", status: "Aktif", date: "28 Mei 2026" },
       { sub: "budidewi", groom: "Budi", bride: "Dewi", pkg: "Sakinah", status: "Expired", date: "20 Mei 2026" },
     ]);
+
+    const loadedFiles = storedFiles ? JSON.parse(storedFiles) : initialFileContents;
+    setFileContents(loadedFiles);
+    setEditorContent(loadedFiles["templates/sakinah/config.json"] || "");
+    setComponentsList(storedComps ? JSON.parse(storedComps) : initialComponents);
+
+    if (storedSettings) {
+      try {
+        const s = JSON.parse(storedSettings);
+        setTmplName(s.name || "Sakinah");
+        setTmplCategory(s.category || "Basic");
+        setTmplStatus(s.status || "Aktif");
+        setTmplMinPackage(s.minPackage || "Sakinah");
+        setTmplPrimaryColor(s.primaryColor || "#8c7853");
+        setTmplAccentColor(s.accentColor || "#eedfc2");
+        setTmplFontHeading(s.fontHeading || "Outfit");
+        setTmplFontBody(s.fontBody || "Inter");
+        setTmplThumbnail(s.thumbnail || "🦢");
+      } catch (e) {}
+    }
   }, []);
 
   const handleLogout = () => {
@@ -113,6 +373,137 @@ function Admin() {
       window.location.href = "/login";
     }, 1000);
   };
+
+  // ================= ADMIN TEMPLATE BUILDER METHODS =================
+  const toggleFolder = (folder: string) => {
+    setExpandedFolders(prev => ({
+      ...prev,
+      [folder]: !prev[folder]
+    }));
+  };
+
+  const handleFileClick = (path: string) => {
+    setSelectedFile(path);
+    setEditorContent(fileContents[path] || "");
+    toast.info(`Membuka file: ${path.split("/").pop()}`);
+  };
+
+  const handleSaveFileContent = () => {
+    const nextContents = { ...fileContents, [selectedFile]: editorContent };
+    setFileContents(nextContents);
+    localStorage.setItem("sakinah_admin_files", JSON.stringify(nextContents));
+    toast.success("File source code berhasil disimpan ke local storage!");
+  };
+
+  const handleSaveBuilderSettings = () => {
+    const settings = {
+      name: tmplName,
+      category: tmplCategory,
+      status: tmplStatus,
+      minPackage: tmplMinPackage,
+      primaryColor: tmplPrimaryColor,
+      accentColor: tmplAccentColor,
+      fontHeading: tmplFontHeading,
+      fontBody: tmplFontBody,
+      thumbnail: tmplThumbnail
+    };
+    localStorage.setItem("sakinah_admin_builder_settings", JSON.stringify(settings));
+
+    // Also update in templatesList if it matches tmplName
+    const updatedTemplatesList = templatesList.map(t => {
+      if (t.name.toLowerCase() === tmplName.toLowerCase() || t.id === "t1") {
+        return {
+          ...t,
+          name: tmplName,
+          type: (tmplMinPackage === "Sakinah" ? "gratis" : "premium") as "gratis" | "premium",
+          thumbnail: tmplThumbnail
+        };
+      }
+      return t;
+    });
+    handleSaveTemplates(updatedTemplatesList);
+    toast.success("Template settings berhasil disimpan dan disinkronkan!");
+  };
+
+  const handlePublishBuilderTemplate = () => {
+    handleSaveBuilderSettings();
+    toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
+      loading: "Mempublikasikan template ke marketplace...",
+      success: "Template berhasil dipublikasikan & aktif di website user! 🚀",
+      error: "Gagal mempublikasikan template."
+    });
+  };
+
+  // Component Actions
+  const handleEditComponent = (tag: string) => {
+    const matchedFile = `templates/sakinah/sections/${tag.charAt(0).toUpperCase() + tag.slice(1)}Section.tsx`;
+    if (fileContents[matchedFile]) {
+      setSelectedFile(matchedFile);
+      setEditorContent(fileContents[matchedFile]);
+      // Switch tab to Template Builder using route navigation
+      window.location.search = "?tab=Template+Builder";
+      toast.success(`Mengedit komponen: ${tag}Section.tsx`);
+    } else {
+      // Fallback
+      const firstSectionFile = Object.keys(fileContents).find(k => k.includes(`sections/${tag.charAt(0).toUpperCase()}`));
+      if (firstSectionFile) {
+        setSelectedFile(firstSectionFile);
+        setEditorContent(fileContents[firstSectionFile]);
+        window.location.search = "?tab=Template+Builder";
+      } else {
+        toast.error(`File komponen ${tag}Section tidak ditemukan.`);
+      }
+    }
+  };
+
+  const handlePreviewComponent = (tag: string) => {
+    setMobilePreviewTab(tag === "cover" ? "Home" : tag === "couple" ? "Mempelai" : tag === "event" ? "Undangan" : tag === "map" ? "Map" : tag === "story" ? "Cerita" : tag === "gallery" ? "Photo" : tag === "wishes" ? "Ucapan" : "Home");
+    window.location.search = "?tab=Preview+Template";
+    toast.info(`Membuka preview untuk section: ${tag}`);
+  };
+
+  const handleDuplicateComponent = (id: string) => {
+    const comp = componentsList.find(c => c.id === id);
+    if (!comp) return;
+    const newComp = {
+      ...comp,
+      id: "c" + (componentsList.length + 1),
+      name: `${comp.name} (Copy)`,
+      tag: `${comp.tag}_copy`,
+      file: `${comp.file.replace(".tsx", "")}Copy.tsx`
+    };
+    const nextComps = [...componentsList, newComp];
+    setComponentsList(nextComps);
+    localStorage.setItem("sakinah_admin_comps", JSON.stringify(nextComps));
+    
+    // Also duplicate in fileContents
+    const originPath = `templates/sakinah/sections/${comp.file}`;
+    const targetPath = `templates/sakinah/sections/${newComp.file}`;
+    const nextContents = {
+      ...fileContents,
+      [targetPath]: fileContents[originPath] ? fileContents[originPath].replace(comp.file.replace(".tsx", ""), newComp.file.replace(".tsx", "")) : `// Duplicated component code`
+    };
+    setFileContents(nextContents);
+    localStorage.setItem("sakinah_admin_files", JSON.stringify(nextContents));
+
+    toast.success(`Berhasil menduplikasi komponen: ${comp.name}`);
+  };
+
+  // Template List Admin Actions
+  const handleDuplicateTemplate = (id: string) => {
+    const tmpl = templatesList.find(t => t.id === id);
+    if (!tmpl) return;
+    const newTmpl = {
+      ...tmpl,
+      id: "t" + (templatesList.length + 1),
+      name: `${tmpl.name} (Copy)`,
+      popular: false
+    };
+    const nextTmpls = [...templatesList, newTmpl];
+    handleSaveTemplates(nextTmpls);
+    toast.success(`Berhasil menduplikasi template: ${tmpl.name}`);
+  };
+  // =================================================================
 
   const handleAdminLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -569,81 +960,682 @@ function Admin() {
           </div>
         )}
 
-        {/* -------------------- 3. TAB: TEMPLATE -------------------- */}
-        {tab === "Template" && (
-          <div className="grid gap-6 lg:grid-cols-3 max-w-6xl">
-            {/* Form Tambah Template */}
-            <div className="rounded-2xl border border-border bg-card p-5 h-fit space-y-4">
-              <h3 className="font-display font-semibold text-sm flex items-center gap-1.5">
-                <Plus className="h-4 w-4 text-gold" /> Tambah Template Baru
+        {/* -------------------- 3B. TAB: TEMPLATE BUILDER -------------------- */}
+        {tab === "Template Builder" && (
+          <div className="grid gap-6 lg:grid-cols-12 max-w-7xl">
+            
+            {/* 1. SIDEBAR FILE EXPLORER (Col Span: 3) */}
+            <div className="lg:col-span-3 rounded-2xl border border-border bg-card p-4 space-y-4">
+              <h3 className="font-display font-semibold text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <Folder className="h-4 w-4 text-gold" /> File Explorer
               </h3>
-              <form onSubmit={handleAddTemplate} className="space-y-3 text-xs">
-                <div className="space-y-1.5">
-                  <Label>Nama Template</Label>
-                  <Input
-                    value={newTemplateName}
-                    onChange={(e) => setNewTemplateName(e.target.value)}
-                    placeholder="Contoh: Gold Velvet"
-                    className="text-xs"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Kategori Paket</Label>
-                  <select
-                    value={newTemplateType}
-                    onChange={(e) => setNewTemplateType(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-md border border-input bg-background"
-                  >
-                    <option value="gratis">Sakinah (Gratis)</option>
-                    <option value="premium">Mawaddah / Warahmah (Premium)</option>
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Emoji / Ikon Representasi</Label>
-                  <Input
-                    value={newTemplateIcon}
-                    onChange={(e) => setNewTemplateIcon(e.target.value)}
-                    placeholder="Contoh: ✨"
-                    className="text-xs text-center font-bold"
-                  />
-                </div>
-                <Button type="submit" className="w-full bg-gold hover:bg-gold/90 text-primary-foreground rounded-full text-xs font-semibold mt-2">
-                  Daftarkan Template
-                </Button>
-              </form>
-            </div>
-
-            {/* Grid List Template */}
-            <div className="lg:col-span-2 space-y-4">
-              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                Daftar Template Sistem ({templatesList.length})
-              </h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {templatesList.map((t) => (
-                  <div key={t.id} className="rounded-2xl border border-border bg-card p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl p-2.5 rounded-xl bg-muted/60">{t.thumbnail}</span>
+              
+              <div className="space-y-1.5 text-xs select-none">
+                
+                {/* Folder templates */}
+                <div>
+                  <button onClick={() => toggleFolder("templates")} className="flex items-center gap-1.5 hover:text-gold transition font-medium w-full text-left">
+                    {expandedFolders["templates"] ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                    <Folder className="h-3.5 w-3.5 text-gold fill-gold/20" />
+                    <span>templates/</span>
+                  </button>
+                  
+                  {expandedFolders["templates"] && (
+                    <div className="pl-4 mt-1 space-y-1.5 border-l border-border/60 ml-1.5 pt-0.5">
+                      
+                      {/* Folder sakinah */}
                       <div>
-                        <div className="font-bold text-xs">{t.name}</div>
-                        <Badge variant={t.type === "gratis" ? "outline" : "default"} className="text-[8px] uppercase tracking-wider mt-1">
-                          {t.type === "gratis" ? "Sakinah" : "Premium"}
-                        </Badge>
+                        <button onClick={() => toggleFolder("templates/sakinah")} className="flex items-center gap-1.5 hover:text-gold transition font-medium w-full text-left">
+                          {expandedFolders["templates/sakinah"] ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                          <Folder className="h-3.5 w-3.5 text-gold fill-gold/20" />
+                          <span>sakinah/</span>
+                        </button>
+                        
+                        {expandedFolders["templates/sakinah"] && (
+                          <div className="pl-4 mt-1 space-y-1.5 border-l border-border/60 ml-1.5 pt-0.5">
+                            
+                            {/* Folder sections */}
+                            <div>
+                              <button onClick={() => toggleFolder("templates/sakinah/sections")} className="flex items-center gap-1.5 hover:text-gold transition font-medium w-full text-left">
+                                {expandedFolders["templates/sakinah/sections"] ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                                <Folder className="h-3.5 w-3.5 text-amber-500 fill-amber-500/10" />
+                                <span>sections/</span>
+                              </button>
+                              
+                              {expandedFolders["templates/sakinah/sections"] && (
+                                <div className="pl-4 mt-1 space-y-1 border-l border-border/60 ml-1.5">
+                                  {Object.keys(fileContents)
+                                    .filter(p => p.startsWith("templates/sakinah/sections/"))
+                                    .map(p => {
+                                      const isSelected = selectedFile === p;
+                                      const filename = p.split("/").pop();
+                                      return (
+                                        <button
+                                          key={p}
+                                          onClick={() => handleFileClick(p)}
+                                          className={`flex items-center gap-1.5 w-full text-left hover:text-gold py-1 transition font-mono text-[10px]
+                                            ${isSelected ? "text-gold font-bold bg-gold/5 px-1.5 rounded" : "text-muted-foreground"}`}
+                                        >
+                                          <FileCode className="h-3 w-3 text-cyan-600 shrink-0" />
+                                          <span className="truncate">{filename}</span>
+                                        </button>
+                                      );
+                                    })}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Folder styles */}
+                            <div>
+                              <button onClick={() => toggleFolder("templates/sakinah/styles")} className="flex items-center gap-1.5 hover:text-gold transition font-medium w-full text-left">
+                                {expandedFolders["templates/sakinah/styles"] ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                                <Folder className="h-3.5 w-3.5 text-amber-500 fill-amber-500/10" />
+                                <span>styles/</span>
+                              </button>
+                              
+                              {expandedFolders["templates/sakinah/styles"] && (
+                                <div className="pl-4 mt-1 space-y-1 border-l border-border/60 ml-1.5">
+                                  <button
+                                    onClick={() => handleFileClick("templates/sakinah/styles/theme.css")}
+                                    className={`flex items-center gap-1.5 w-full text-left hover:text-gold py-1 transition font-mono text-[10px]
+                                      ${selectedFile === "templates/sakinah/styles/theme.css" ? "text-gold font-bold bg-gold/5 px-1.5 rounded" : "text-muted-foreground"}`}
+                                  >
+                                    <File className="h-3 w-3 text-indigo-500 shrink-0" />
+                                    <span>theme.css</span>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Folder assets */}
+                            <div>
+                              <button onClick={() => toggleFolder("templates/sakinah/assets")} className="flex items-center gap-1.5 hover:text-gold transition font-medium w-full text-left">
+                                {expandedFolders["templates/sakinah/assets"] ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                                <Folder className="h-3.5 w-3.5 text-amber-500 fill-amber-500/10" />
+                                <span>assets/</span>
+                              </button>
+                              
+                              {expandedFolders["templates/sakinah/assets"] && (
+                                <div className="pl-4 mt-1 space-y-1 border-l border-border/60 ml-1.5">
+                                  <div className="flex items-center gap-1.5 py-1 text-muted-foreground/60 font-mono text-[10px]">
+                                    <ImageIcon className="h-3 w-3 text-teal-600 shrink-0" />
+                                    <span>background.jpg</span>
+                                  </div>
+                                  <div className="flex items-center gap-1.5 py-1 text-muted-foreground/60 font-mono text-[10px]">
+                                    <ImageIcon className="h-3 w-3 text-teal-600 shrink-0" />
+                                    <span>flower.png</span>
+                                  </div>
+                                  <div className="flex items-center gap-1.5 py-1 text-muted-foreground/60 font-mono text-[10px]">
+                                    <Volume2 className="h-3 w-3 text-purple-600 shrink-0" />
+                                    <span>music.mp3</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Files index.json, config.json, preview.png */}
+                            <button
+                              onClick={() => handleFileClick("templates/sakinah/index.json")}
+                              className={`flex items-center gap-1.5 w-full text-left hover:text-gold py-1 transition font-mono text-[10px]
+                                ${selectedFile === "templates/sakinah/index.json" ? "text-gold font-bold bg-gold/5 px-1.5 rounded" : "text-muted-foreground"}`}
+                            >
+                              <FileCode className="h-3 w-3 text-yellow-600 shrink-0" />
+                              <span>index.json</span>
+                            </button>
+                            
+                            <button
+                              onClick={() => handleFileClick("templates/sakinah/config.json")}
+                              className={`flex items-center gap-1.5 w-full text-left hover:text-gold py-1 transition font-mono text-[10px]
+                                ${selectedFile === "templates/sakinah/config.json" ? "text-gold font-bold bg-gold/5 px-1.5 rounded" : "text-muted-foreground"}`}
+                            >
+                              <FileCode className="h-3 w-3 text-yellow-600 shrink-0" />
+                              <span>config.json</span>
+                            </button>
+
+                            <div className="flex items-center gap-1.5 py-1 text-muted-foreground/60 font-mono text-[10px]">
+                              <ImageIcon className="h-3 w-3 text-teal-600 shrink-0" />
+                              <span>preview.png</span>
+                            </div>
+
+                          </div>
+                        )}
                       </div>
+
                     </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleRemoveTemplate(t.id)}
-                      className="text-red-500 hover:text-red-600 p-1"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
+                  )}
+                </div>
+
               </div>
             </div>
+
+            {/* 2. AREA EDITOR TENGAH (Col Span: 6) */}
+            <div className="lg:col-span-6 rounded-2xl border border-border bg-card p-5 space-y-4 flex flex-col justify-between min-h-[500px]">
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-border">
+                  <div>
+                    <h3 className="font-display font-semibold text-xs flex items-center gap-1.5">
+                      <Code className="h-4 w-4 text-gold" /> Source Code Editor
+                    </h3>
+                    <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{selectedFile}</p>
+                  </div>
+                  <Button onClick={handleSaveFileContent} size="sm" className="bg-gold hover:bg-gold/90 text-primary-foreground text-[10px] h-7 rounded-full">
+                    Simpan File
+                  </Button>
+                </div>
+
+                {/* Editor Container */}
+                <div className="flex font-mono text-[10px] overflow-auto border border-border/80 rounded-xl bg-zinc-950 text-zinc-100 h-[420px]">
+                  
+                  {/* Line numbers dummy */}
+                  <div className="select-none text-zinc-600 text-right p-3 bg-zinc-900 border-r border-zinc-800 pr-2 min-w-10">
+                    {editorContent.split("\n").map((_, i) => (
+                      <div key={i}>{i + 1}</div>
+                    ))}
+                  </div>
+
+                  {/* Textarea code */}
+                  <textarea
+                    value={editorContent}
+                    onChange={(e) => setEditorContent(e.target.value)}
+                    className="flex-1 p-3 bg-transparent text-zinc-100 font-mono text-[10px] focus:outline-none resize-none h-full outline-none leading-relaxed"
+                    spellCheck={false}
+                  />
+
+                </div>
+              </div>
+
+              <div className="p-3 bg-muted/30 border border-border/60 rounded-xl flex items-start gap-2.5">
+                <Terminal className="h-4 w-4 text-gold shrink-0 mt-0.5" />
+                <p className="text-[9px] text-muted-foreground leading-relaxed">
+                  <strong>Penyuntingan Kode</strong>: Anda dapat mengubah properti JSON atau kode section React secara modular. Kode yang disunting akan disinkronkan langsung ke visual render pratinjau mobile.
+                </p>
+              </div>
+
+            </div>
+
+            {/* 3. PANEL KANAN TEMPLATE SETTINGS (Col Span: 3) */}
+            <div className="lg:col-span-3 space-y-6">
+              
+              {/* Form Settings */}
+              <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+                <h3 className="font-display font-semibold text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                  <Sliders className="h-4 w-4 text-gold" /> Template Settings
+                </h3>
+
+                <div className="space-y-3 text-xs">
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Nama Template</Label>
+                    <Input value={tmplName} onChange={(e) => setTmplName(e.target.value)} className="text-xs h-8" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-[10px]">Kategori</Label>
+                      <select value={tmplCategory} onChange={(e) => setTmplCategory(e.target.value)} className="w-full text-[10px] px-2 py-1.5 rounded-md border border-input bg-background">
+                        <option value="Basic">Basic</option>
+                        <option value="Premium">Premium</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px]">Status</Label>
+                      <select value={tmplStatus} onChange={(e) => setTmplStatus(e.target.value)} className="w-full text-[10px] px-2 py-1.5 rounded-md border border-input bg-background">
+                        <option value="Aktif">Aktif</option>
+                        <option value="Draft">Draft</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Paket Minimal</Label>
+                    <select value={tmplMinPackage} onChange={(e) => setTmplMinPackage(e.target.value)} className="w-full text-[10px] px-2 py-1.5 rounded-md border border-input bg-background">
+                      <option value="Sakinah">Sakinah (Gratis)</option>
+                      <option value="Mawaddah">Mawaddah (Premium)</option>
+                      <option value="Warahmah">Warahmah (Eksklusif)</option>
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-[10px]">Warna Utama</Label>
+                      <div className="flex gap-1">
+                        <input type="color" value={tmplPrimaryColor} onChange={(e) => setTmplPrimaryColor(e.target.value)} className="h-8 w-8 rounded border p-0 cursor-pointer shrink-0" />
+                        <Input value={tmplPrimaryColor} onChange={(e) => setTmplPrimaryColor(e.target.value)} className="text-[9px] h-8 px-1" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px]">Warna Aksen</Label>
+                      <div className="flex gap-1">
+                        <input type="color" value={tmplAccentColor} onChange={(e) => setTmplAccentColor(e.target.value)} className="h-8 w-8 rounded border p-0 cursor-pointer shrink-0" />
+                        <Input value={tmplAccentColor} onChange={(e) => setTmplAccentColor(e.target.value)} className="text-[9px] h-8 px-1" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-[10px]">Font Heading</Label>
+                      <select value={tmplFontHeading} onChange={(e) => setTmplFontHeading(e.target.value)} className="w-full text-[10px] px-2 py-1.5 rounded-md border border-input bg-background">
+                        <option value="Outfit">Outfit</option>
+                        <option value="Playfair Display">Playfair</option>
+                        <option value="Cinzel">Cinzel</option>
+                        <option value="Great Vibes">Great Vibes</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px]">Font Body</Label>
+                      <select value={tmplFontBody} onChange={(e) => setTmplFontBody(e.target.value)} className="w-full text-[10px] px-2 py-1.5 rounded-md border border-input bg-background">
+                        <option value="Inter">Inter</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Lora">Lora</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-[10px]">Ikon / Thumbnail Preview</Label>
+                    <Input value={tmplThumbnail} onChange={(e) => setTmplThumbnail(e.target.value)} className="text-xs h-8 text-center" />
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <Button onClick={handleSaveBuilderSettings} size="sm" variant="outline" className="flex-1 text-[10px] rounded-full">
+                      Simpan
+                    </Button>
+                    <Button onClick={handlePublishBuilderTemplate} size="sm" className="flex-1 bg-gold hover:bg-gold/90 text-primary-foreground text-[10px] rounded-full font-semibold">
+                      Publish
+                    </Button>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Data Binding variables */}
+              <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+                <h3 className="font-display font-semibold text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                  <Database className="h-4 w-4 text-gold" /> Dynamic Data Binding
+                </h3>
+                <p className="text-[9px] text-muted-foreground leading-relaxed">
+                  Gunakan tag variabel di bawah ini pada komponen/file HTML Anda agar terikat otomatis dengan data asli dashboard pengguna:
+                </p>
+
+                <div className="max-h-52 overflow-y-auto space-y-1.5 pr-1.5 scrollbar-thin">
+                  {[
+                    { v: "{{groom.fullName}}", d: "Nama Lengkap Pria" },
+                    { v: "{{groom.nickName}}", d: "Nama Panggilan Pria" },
+                    { v: "{{groom.fatherName}}", d: "Nama Ayah Pria" },
+                    { v: "{{groom.motherName}}", d: "Nama Ibu Pria" },
+                    { v: "{{bride.fullName}}", d: "Nama Lengkap Wanita" },
+                    { v: "{{bride.nickName}}", d: "Nama Panggilan Wanita" },
+                    { v: "{{bride.fatherName}}", d: "Nama Ayah Wanita" },
+                    { v: "{{bride.motherName}}", d: "Nama Ibu Wanita" },
+                    { v: "{{event.akad.date}}", d: "Tanggal Akad" },
+                    { v: "{{event.akad.time}}", d: "Jam Akad" },
+                    { v: "{{event.akad.location}}", d: "Tempat Akad" },
+                    { v: "{{event.resepsi.date}}", d: "Tanggal Resepsi" },
+                    { v: "{{event.resepsi.time}}", d: "Jam Resepsi" },
+                    { v: "{{event.resepsi.location}}", d: "Tempat Resepsi" },
+                    { v: "{{gallery.photos}}", d: "Array File Gambar" },
+                    { v: "{{story.items}}", d: "List Kisah Cinta" },
+                    { v: "{{wishes.items}}", d: "List Doa RSVP" },
+                    { v: "{{gift.accounts}}", d: "Daftar No. Rekening" },
+                  ].map((x) => (
+                    <div key={x.v} className="flex justify-between items-center text-[9px] border-b border-border/40 pb-1">
+                      <code className="font-mono text-gold font-bold">{x.v}</code>
+                      <span className="text-muted-foreground">{x.d}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-border text-[9px] text-amber-600 font-semibold leading-relaxed">
+                  ⚠️ Reminder: Bila user menggunakan domain/tautan asli, subdomain unik otomatis dialokasikan (contoh: di-ra.sakinahweb.lovable.app) dan sistem akan memetakan data user ini secara dinamis.
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
         )}
+
+        {/* -------------------- 3C. TAB: FILE TEMPLATE (LIST TEMPLATES) -------------------- */}
+        {tab === "File Template" && (
+          <div className="space-y-6">
+            
+            <div className="flex justify-between items-center">
+              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                Daftar Template Undangan Pernikahan Sistem ({templatesList.length})
+              </h3>
+              <Button onClick={() => window.location.search = "?tab=Template"} className="bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full h-8 px-4 font-semibold">
+                + Tambah Template
+              </Button>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card overflow-hidden">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead>
+                  <tr className="bg-muted/80 border-b border-border font-semibold text-muted-foreground">
+                    <th className="p-3">Ikon</th>
+                    <th className="p-3">Nama Template</th>
+                    <th className="p-3">Kategori</th>
+                    <th className="p-3">Paket Minimal</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3">Tanggal Dibuat</th>
+                    <th className="p-3 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {templatesList.map((tmpl) => {
+                    const isPremium = tmpl.type === "premium";
+                    const minPkg = tmpl.id === "t1" || tmpl.id === "t3" || tmpl.id === "t6" || tmpl.id === "t8" ? "Sakinah" : tmpl.id === "t10" ? "Mawaddah" : "Warahmah";
+                    return (
+                      <tr key={tmpl.id} className="border-b border-border/40 last:border-0 hover:bg-muted/25">
+                        <td className="p-3 text-xl">{tmpl.thumbnail}</td>
+                        <td className="p-3 font-semibold text-foreground">{tmpl.name}</td>
+                        <td className="p-3">
+                          <Badge variant={isPremium ? "default" : "outline"} className="text-[9px]">
+                            {isPremium ? "Premium" : "Basic"}
+                          </Badge>
+                        </td>
+                        <td className="p-3 text-muted-foreground font-semibold">{minPkg}</td>
+                        <td className="p-3">
+                          <Badge className="bg-emerald-600 text-white text-[8px] uppercase tracking-wider">Aktif</Badge>
+                        </td>
+                        <td className="p-3 text-muted-foreground">24 Juni 2026</td>
+                        <td className="p-3 text-right flex justify-end gap-1.5 items-center">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => {
+                              setSelectedFile("templates/sakinah/config.json");
+                              setTmplName(tmpl.name);
+                              setTmplThumbnail(tmpl.thumbnail);
+                              setTmplMinPackage(minPkg);
+                              window.location.search = "?tab=Template+Builder";
+                            }}
+                            className="text-[9px] h-7 rounded-full px-3"
+                          >
+                            <Edit className="h-3 w-3 mr-1" /> Edit Builder
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setPreviewTemplateId(tmpl.id);
+                              window.location.search = "?tab=Preview+Template";
+                            }}
+                            className="text-[9px] h-7 rounded-full px-3"
+                          >
+                            <Eye className="h-3 w-3 mr-1" /> Preview
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDuplicateTemplate(tmpl.id)}
+                            className="text-muted-foreground hover:text-foreground h-7 w-7 p-0 flex items-center justify-center rounded-full"
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleRemoveTemplate(tmpl.id)}
+                            className="text-red-500 hover:text-red-600 h-7 w-7 p-0 flex items-center justify-center rounded-full"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        )}
+
+        {/* -------------------- 3D. TAB: KOMPONEN TEMPLATE -------------------- */}
+        {tab === "Komponen Template" && (
+          <div className="space-y-6">
+            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              Daftar Komponen UI Modular Undangan Pernikahan
+            </h3>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl">
+              {componentsList.map((c) => (
+                <div key={c.id} className="rounded-2xl border border-border bg-card p-5 relative overflow-hidden flex flex-col justify-between min-h-[160px] shadow-sm hover:shadow-md transition">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Badge className="bg-gold/15 text-gold border-0 text-[8px] font-bold">{c.tag.toUpperCase()}</Badge>
+                      <Badge variant="secondary" className="text-[8px] bg-emerald-600/10 text-emerald-600">{c.status}</Badge>
+                    </div>
+                    <h4 className="font-display font-bold text-sm text-foreground">{c.name}</h4>
+                    <p className="text-[9px] text-muted-foreground font-mono flex items-center gap-1">
+                      <FileCode className="h-3.5 w-3.5 text-cyan-600 shrink-0" /> {c.file}
+                    </p>
+                  </div>
+                  
+                  <div className="mt-4 flex gap-1.5 justify-end pt-3 border-t border-border/40">
+                    <Button size="sm" variant="outline" onClick={() => handleEditComponent(c.tag)} className="text-[9px] h-6 rounded-full px-2.5">
+                      <Edit className="h-2.5 w-2.5 mr-1" /> Edit
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handlePreviewComponent(c.tag)} className="text-[9px] h-6 rounded-full px-2.5">
+                      <Eye className="h-2.5 w-2.5 mr-1" /> Preview
+                    </Button>
+                    <button onClick={() => handleDuplicateComponent(c.id)} className="text-muted-foreground hover:text-foreground h-6 w-6 flex items-center justify-center rounded-full hover:bg-muted transition cursor-pointer border-0 bg-transparent">
+                      <Copy className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        )}
+
+        {/* -------------------- 3E. TAB: PREVIEW TEMPLATE -------------------- */}
+        {tab === "Preview Template" && (
+          <div className="grid gap-6 lg:grid-cols-12 max-w-6xl">
+            
+            {/* Control Sidebar (Col Span: 4) */}
+            <div className="lg:col-span-4 rounded-2xl border border-border bg-card p-5 space-y-4 h-fit">
+              <h3 className="font-display font-semibold text-xs text-muted-foreground uppercase tracking-wider">
+                Preview Controls
+              </h3>
+              
+              <div className="space-y-3 text-xs">
+                <div className="space-y-1">
+                  <Label className="text-[10px]">Pilih Template Undangan</Label>
+                  <select
+                    value={previewTemplateId}
+                    onChange={(e) => setPreviewTemplateId(e.target.value)}
+                    className="w-full text-xs px-3 py-2 rounded-md border border-input bg-background"
+                  >
+                    {templatesList.map(t => (
+                      <option key={t.id} value={t.id}>{t.name} ({t.thumbnail})</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <Label className="text-[10px] block">Detil Warna & Font Aktif</Label>
+                  <div className="flex gap-1.5 items-center">
+                    <span className="h-5 w-5 rounded-full border shrink-0" style={{ backgroundColor: tmplPrimaryColor }} />
+                    <span className="h-5 w-5 rounded-full border shrink-0" style={{ backgroundColor: tmplAccentColor }} />
+                    <span className="font-mono text-[9px] text-muted-foreground font-semibold px-2 py-0.5 rounded bg-muted">
+                      {tmplFontHeading} / {tmplFontBody}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-border/60 text-[9px] text-muted-foreground leading-relaxed space-y-2">
+                  <p>
+                    💡 **Wedding Theme Simulator**: Di samping kanan adalah visualisasi render pratinjau dari template yang dipilih. Tema ini didesain floral putih elegan.
+                  </p>
+                  <p className="text-amber-600 font-semibold">
+                    🌐 Info Subdomain: Saat user mengakses link asli (contoh subdomain: `adi-rara.sakinahweb.lovable.app`), parser engine otomatis me-replace variabel data binding `{{variable}}` dengan data asli secara instan.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Simulator Frame (Col Span: 8) */}
+            <div className="lg:col-span-8 flex justify-center items-center py-2 bg-muted/20 border border-border/80 rounded-3xl p-6">
+              
+              <div className="w-full max-w-sm aspect-[9/19] rounded-[2.5rem] overflow-hidden border-8 border-zinc-950 bg-background shadow-2xl relative flex flex-col justify-between h-[680px]">
+                
+                {/* Simulated Content Area (Floral Elegant White theme as requested) */}
+                <div className="flex-1 overflow-y-auto scrollbar-none bg-[#fdfbf7] p-5 pb-16 text-center select-none text-stone-800 space-y-4">
+                  
+                  {/* Visual Header / Floral Graphic representation */}
+                  <div className="w-full text-center text-xs text-[#8c7853] py-2 border-b border-[#8c7853]/15 font-serif italic">
+                    🌸 Floral Elegance Theme 🌸
+                  </div>
+
+                  {mobilePreviewTab === "Home" && (
+                    <div className="py-12 space-y-4 animate-fade-in">
+                      <span className="text-3xl animate-bounce inline-block">🕊️</span>
+                      <div className="text-[9px] tracking-[0.3em] uppercase text-[#8c7853] font-bold">THE WEDDING OF</div>
+                      <h1 className="font-display text-4xl font-extrabold text-[#8c7853] font-serif">Adi & Rara</h1>
+                      <p className="text-[10px] text-muted-foreground italic leading-relaxed">
+                        Dengan memohon rahmat & ridho Allah SWT, kami mengundang Anda untuk merayakan pernikahan kami.
+                      </p>
+                      <div className="pt-6 text-xs font-bold text-[#8c7853]">Senin, 31 Agustus 2026</div>
+                    </div>
+                  )}
+
+                  {mobilePreviewTab === "Mempelai" && (
+                    <div className="py-4 space-y-5 text-center animate-fade-in">
+                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Kedua Mempelai</h2>
+                      
+                      <div className="p-4 border border-[#8c7853]/20 rounded-2xl bg-white/80 shadow-sm space-y-1">
+                        <div className="mx-auto h-12 w-12 rounded-full bg-[#8c7853] text-white flex items-center justify-center font-bold text-sm">A</div>
+                        <h3 className="font-bold text-sm mt-2 text-[#8c7853]">Adi Sumaryadi</h3>
+                        <p className="text-[9px] text-muted-foreground">Putra dari Sumarmo & Kantun</p>
+                      </div>
+
+                      <div className="text-lg text-[#8c7853] italic">&</div>
+
+                      <div className="p-4 border border-[#8c7853]/20 rounded-2xl bg-white/80 shadow-sm space-y-1">
+                        <div className="mx-auto h-12 w-12 rounded-full bg-[#8c7853] text-white flex items-center justify-center font-bold text-sm">R</div>
+                        <h3 className="font-bold text-sm mt-2 text-[#8c7853]">Siti Salamah Azzahra</h3>
+                        <p className="text-[9px] text-muted-foreground">Putri dari Maman & Imas</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {mobilePreviewTab === "Undangan" && (
+                    <div className="py-4 space-y-4 animate-fade-in text-center">
+                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Waktu & Tempat</h2>
+                      
+                      <div className="p-4 border border-[#8c7853]/20 rounded-2xl bg-white shadow-sm space-y-2">
+                        <h3 className="font-bold text-xs text-[#8c7853] border-b pb-1">Akad Nikah</h3>
+                        <p className="text-[10px] text-muted-foreground">Senin, 31 Agustus 2026</p>
+                        <p className="text-[10px] text-muted-foreground">Pukul 12:00 WIB - Selesai</p>
+                        <p className="text-[9px] font-medium text-stone-600 mt-1">Aula Masjid ABRI Cimahi</p>
+                      </div>
+
+                      <div className="p-4 border border-[#8c7853]/20 rounded-2xl bg-white shadow-sm space-y-2">
+                        <h3 className="font-bold text-xs text-[#8c7853] border-b pb-1">Resepsi Pernikahan</h3>
+                        <p className="text-[10px] text-muted-foreground">Senin, 31 Agustus 2026</p>
+                        <p className="text-[10px] text-muted-foreground">Pukul 12:00 WIB - Selesai</p>
+                        <p className="text-[9px] font-medium text-stone-600 mt-1">Aula Masjid ABRI Cimahi</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {mobilePreviewTab === "Map" && (
+                    <div className="py-6 space-y-4 animate-fade-in text-center">
+                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Peta Lokasi</h2>
+                      <div className="h-32 rounded-xl bg-muted border border-border/80 flex flex-col items-center justify-center p-3">
+                        <MapPin className="h-6 w-6 text-[#8c7853] mb-1" />
+                        <span className="text-[10px] font-bold">Aula Masjid ABRI Cimahi</span>
+                        <span className="text-[8px] text-muted-foreground mt-0.5">Jalan Gatot Subroto Kota Cimahi</span>
+                      </div>
+                      <Button size="sm" className="bg-[#8c7853] hover:bg-[#726241] text-white text-[9px] h-7 rounded-full">
+                        Buka Google Maps
+                      </Button>
+                    </div>
+                  )}
+
+                  {mobilePreviewTab === "Cerita" && (
+                    <div className="py-4 space-y-4 animate-fade-in text-left px-2">
+                      <h2 className="font-display text-xl text-[#8c7853] font-semibold text-center mb-2">Kisah Cinta</h2>
+                      <div className="border-l border-[#8c7853]/40 pl-4 space-y-4 py-1">
+                        <div>
+                          <h4 className="font-bold text-xs text-[#8c7853]">Pertama Kali Berjumpa</h4>
+                          <p className="text-[8px] text-muted-foreground">16 Oktober 2014</p>
+                          <p className="text-[10px] text-stone-600 mt-0.5">Pertama kali berjumpa di kampus.</p>
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-xs text-[#8c7853]">Prosesi Lamaran</h4>
+                          <p className="text-[8px] text-muted-foreground">15 Maret 2015</p>
+                          <p className="text-[10px] text-stone-600 mt-0.5">Pertemuan formal kedua keluarga besar.</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {mobilePreviewTab === "Photo" && (
+                    <div className="py-4 space-y-3 animate-fade-in text-center">
+                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Galeri Foto</h2>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div key={i} className="aspect-square bg-stone-200 rounded-lg flex items-center justify-center text-[8px] text-muted-foreground font-semibold">
+                            Photo {i + 1}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {mobilePreviewTab === "Ucapan" && (
+                    <div className="py-4 space-y-4 animate-fade-in text-center">
+                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Kirim Doa Restu</h2>
+                      <div className="p-3 bg-white border rounded-xl space-y-2 text-left">
+                        <div className="text-[8px] font-bold text-[#8c7853]">Tamu: Budi & Ani</div>
+                        <p className="text-[10px] text-stone-600 leading-relaxed italic">"Selamat menempuh hidup baru ya Rara & Adi! Semoga sakinah mawaddah warahmah."</p>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+
+                {/* Bottom Bar Navigation */}
+                <nav className="absolute bottom-0 inset-x-0 h-12 bg-white border-t border-border flex items-center justify-around text-[8px] font-bold text-muted-foreground shadow-md z-10 select-none">
+                  {[
+                    { tab: "Home", icon: HomeIcon },
+                    { tab: "Mempelai", icon: Users },
+                    { tab: "Undangan", icon: Calendar },
+                    { tab: "Map", icon: Compass },
+                    { tab: "Cerita", icon: Heart },
+                    { tab: "Photo", icon: ImageIcon },
+                    { tab: "Ucapan", icon: MessageCircle },
+                  ].map((item) => {
+                    const isActive = mobilePreviewTab === item.tab;
+                    return (
+                      <button
+                        key={item.tab}
+                        onClick={() => setMobilePreviewTab(item.tab)}
+                        className={`flex flex-col items-center justify-center gap-0.5 w-12 h-full transition relative border-0 bg-transparent cursor-pointer
+                          ${isActive ? "text-[#8c7853]" : "hover:text-[#8c7853]"}`}
+                      >
+                        <item.icon className="h-3 w-3 shrink-0" />
+                        <span>{item.tab}</span>
+                        {isActive && <span className="absolute bottom-1 w-3 h-0.5 bg-[#8c7853] rounded-full" />}
+                      </button>
+                    );
+                  })}
+                </nav>
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+        {/* -------------------- 4. TAB: TRANSAKSI -------------------- */}
 
         {/* -------------------- 4. TAB: TRANSAKSI -------------------- */}
         {tab === "Transaksi" && (

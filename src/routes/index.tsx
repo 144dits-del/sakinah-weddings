@@ -82,14 +82,27 @@ function Landing() {
       if (querySub) {
         setIsSubdomainMode(true);
         setSubdomain(querySub);
-      } else if (
-        hostname.includes(".sakinahweb.id") &&
-        !hostname.startsWith("www.") &&
-        hostname !== "sakinahweb.id"
-      ) {
-        const sub = hostname.split(".")[0];
-        setIsSubdomainMode(true);
-        setSubdomain(sub);
+      } else {
+        const host = hostname.toLowerCase();
+        let sub = "";
+
+        if (host.includes(".sakinahweb.lovable.app") && host !== "sakinahweb.lovable.app") {
+          sub = host.split(".sakinahweb.lovable.app")[0];
+        } else if (host.includes(".sakinahweb.id") && host !== "sakinahweb.id") {
+          sub = host.split(".sakinahweb.id")[0];
+        } else if (
+          !host.startsWith("www.") &&
+          host !== "sakinahweb.id" &&
+          host !== "sakinahweb.lovable.app" &&
+          host.split(".").length > 2
+        ) {
+          sub = host.split(".")[0];
+        }
+
+        if (sub && sub !== "www") {
+          setIsSubdomainMode(true);
+          setSubdomain(sub);
+        }
       }
     }
   }, []);

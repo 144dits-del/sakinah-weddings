@@ -254,16 +254,75 @@ export default function FullScreenInvitation({
 
   useEffect(() => {
     // Muat data mempelai
-    const storedData = getStoredWeddingData();
+    let storedData = getStoredWeddingData();
+    
+    // If a subdomain is passed, check for custom data stored for this subdomain
+    if (subdomain && subdomain !== "di-ra") {
+      const subSaved = localStorage.getItem(`sakinah_wedding_data_${subdomain}`);
+      if (subSaved) {
+        try {
+          storedData = JSON.parse(subSaved);
+        } catch (e) {}
+      } else {
+        // If not saved, but our current localStorage data matches, use it
+        if (storedData.subdomain === subdomain) {
+          // already matching
+        } else {
+          // Otherwise, adapt the dummy data based on subdomain parts (e.g. adi-siti -> adi & siti)
+          const parts = subdomain.split("-");
+          let groomNick = storedData.groom.nickname;
+          let brideNick = storedData.bride.nickname;
+          let groomFull = storedData.groom.fullName;
+          let brideFull = storedData.bride.fullName;
+          
+          if (parts.length > 0 && parts[0]) {
+            groomNick = parts[0];
+            groomFull = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+          }
+          if (parts.length > 1 && parts[1]) {
+            brideNick = parts[1];
+            brideFull = parts[1].charAt(0).toUpperCase() + parts[1].slice(1);
+          }
+          
+          storedData = {
+            ...storedData,
+            subdomain: subdomain,
+            groom: {
+              ...storedData.groom,
+              nickname: groomNick,
+              fullName: groomFull,
+            },
+            bride: {
+              ...storedData.bride,
+              nickname: brideNick,
+              fullName: brideFull,
+            }
+          };
+        }
+      }
+    }
+    
     setWedding(storedData);
     setActivePkg(getStoredPackage());
-    setSelectedTemplate(localStorage.getItem("sakinah_selected_template") || "sakinah");
+    
+    const savedTemplate = (subdomain && localStorage.getItem(`sakinah_selected_template_${subdomain}`)) || localStorage.getItem("sakinah_selected_template") || "sakinah";
+    setSelectedTemplate(savedTemplate);
 
     // Dengarkan jika ada perubahan data, paket, atau tema
     const handleSyncChange = () => {
-      setWedding(getStoredWeddingData());
+      let freshData = getStoredWeddingData();
+      if (subdomain && subdomain !== "di-ra") {
+        const subSaved = localStorage.getItem(`sakinah_wedding_data_${subdomain}`);
+        if (subSaved) {
+          try {
+            freshData = JSON.parse(subSaved);
+          } catch (e) {}
+        }
+      }
+      setWedding(freshData);
       setActivePkg(getStoredPackage());
-      setSelectedTemplate(localStorage.getItem("sakinah_selected_template") || "sakinah");
+      const freshTemplate = (subdomain && localStorage.getItem(`sakinah_selected_template_${subdomain}`)) || localStorage.getItem("sakinah_selected_template") || "sakinah";
+      setSelectedTemplate(freshTemplate);
     };
     window.addEventListener("storage", handleSyncChange);
     window.addEventListener("sakinah_package_changed", handleSyncChange);
