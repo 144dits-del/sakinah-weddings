@@ -15,6 +15,7 @@ import {
   setStoredPackage,
   formatRupiah,
   WeddingData,
+  dummyWedding,
 } from "@/lib/dummy-data";
 import {
   Lock,
@@ -95,28 +96,9 @@ function Dashboard() {
   const [activePkg, setActivePkg] = useState("Sakinah");
   
   // Muat daftar template dari localStorage jika ada, dipetakan ke format dashboard
-  const [templatesList, setTemplatesList] = useState<any[]>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("sakinah_admin_tmpls");
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          return parsed.map((t: any) => ({
-            id: t.id,
-            name: t.name,
-            type: t.type === "gratis" ? "Basic" : "Premium",
-            icon: t.thumbnail,
-            popular: t.popular || false
-          }));
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    }
-    return defaultDashboardTemplates;
-  });
+  const [templatesList, setTemplatesList] = useState<any[]>(defaultDashboardTemplates);
 
-  const [weddingData, setWeddingData] = useState<WeddingData>(getStoredWeddingData());
+  const [weddingData, setWeddingData] = useState<WeddingData>(dummyWedding);
   const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [selectedMusic, setSelectedMusic] = useState("Beautiful - Instrumental");
   const [customLanguage, setCustomLanguage] = useState<Record<string, string>>({});
@@ -195,6 +177,23 @@ function Dashboard() {
       return () => clearTimeout(timer);
     }
     setIsAuthorized(true);
+
+    // Muat templatesList dari localStorage jika ada
+    const storedTmpls = localStorage.getItem("sakinah_admin_tmpls");
+    if (storedTmpls) {
+      try {
+        const parsed = JSON.parse(storedTmpls);
+        setTemplatesList(parsed.map((t: any) => ({
+          id: t.id,
+          name: t.name,
+          type: t.type === "gratis" ? "Basic" : "Premium",
+          icon: t.thumbnail,
+          popular: t.popular || false
+        })));
+      } catch (e) {
+        console.error(e);
+      }
+    }
 
     const data = getStoredWeddingData();
     setWeddingData(data);

@@ -36,7 +36,7 @@ export default function FullScreenInvitation({
   guestName,
   guestAddress,
 }: FullScreenInvitationProps) {
-  const [wedding, setWedding] = useState<WeddingData>(getStoredWeddingData());
+  const [wedding, setWedding] = useState<WeddingData>(dummyWedding);
   const [activePkg, setActivePkg] = useState("Sakinah");
   const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [isOpen, setIsOpen] = useState(false);
@@ -640,7 +640,7 @@ export default function FullScreenInvitation({
                       </>
                     )}
                     <div className={`mx-auto h-20 w-20 flex items-center justify-center ${theme.fontHead} text-xl font-bold mb-3 ${theme.avatar}`}>
-                      {wedding.groom.nickname.charAt(0).toUpperCase()}
+                      {((wedding.groom?.nickname || "G").charAt(0) || "G").toUpperCase()}
                     </div>
                     <div className={`${theme.fontHead} text-lg font-black capitalize`}>
                       {wedding.groom.fullName}
@@ -663,7 +663,7 @@ export default function FullScreenInvitation({
                       </>
                     )}
                     <div className={`mx-auto h-20 w-20 flex items-center justify-center ${theme.fontHead} text-xl font-bold mb-3 ${theme.avatar}`}>
-                      {wedding.bride.nickname.charAt(0).toUpperCase()}
+                      {((wedding.bride?.nickname || "B").charAt(0) || "B").toUpperCase()}
                     </div>
                     <div className={`${theme.fontHead} text-lg font-black capitalize`}>
                       {wedding.bride.fullName}

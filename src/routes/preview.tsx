@@ -10,6 +10,7 @@ import {
   getStoredWeddingData,
   getStoredPackage,
   WeddingData,
+  dummyWedding,
 } from "@/lib/dummy-data";
 import {
   Heart,
@@ -35,7 +36,7 @@ export const Route = createFileRoute("/preview")({
 
 function Preview() {
   const { theme: queryTheme } = Route.useSearch();
-  const [wedding, setWedding] = useState<WeddingData>(getStoredWeddingData());
+  const [wedding, setWedding] = useState<WeddingData>(dummyWedding);
   const [activePkg, setActivePkg] = useState("Sakinah");
   const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [isOpen, setIsOpen] = useState(false);
@@ -588,7 +589,7 @@ function Preview() {
                         </>
                       )}
                       <div className={`mx-auto h-20 w-20 flex items-center justify-center ${theme.fontHead} text-xl font-bold mb-3 ${theme.avatar}`}>
-                        {wedding.groom.nickname.charAt(0).toUpperCase()}
+                        {((wedding.groom?.nickname || "G").charAt(0) || "G").toUpperCase()}
                       </div>
                       <div className={`${theme.fontHead} text-lg font-black capitalize`}>
                         {wedding.groom.fullName}
@@ -611,7 +612,7 @@ function Preview() {
                         </>
                       )}
                       <div className={`mx-auto h-20 w-20 flex items-center justify-center ${theme.fontHead} text-xl font-bold mb-3 ${theme.avatar}`}>
-                        {wedding.bride.nickname.charAt(0).toUpperCase()}
+                        {((wedding.bride?.nickname || "B").charAt(0) || "B").toUpperCase()}
                       </div>
                       <div className={`${theme.fontHead} text-lg font-black capitalize`}>
                         {wedding.bride.fullName}
@@ -1047,7 +1048,7 @@ function Preview() {
                 {/* Desktop Top Header Navigation Bar */}
                 <header className={`h-16 px-8 border-b flex items-center justify-between select-none shrink-0 ${isMonochrome ? "bg-white border-zinc-950 text-zinc-900" : "bg-background/95 backdrop-blur border-border"}`}>
                   <div className={`font-display font-bold text-sm tracking-widest ${theme.textGold}`}>
-                    {wedding.groom.nickname.toUpperCase()} & {wedding.bride.nickname.toUpperCase()}
+                    {(wedding.groom?.nickname || "Groom").toUpperCase()} & {(wedding.bride?.nickname || "Bride").toUpperCase()}
                   </div>
                   <nav className="flex items-center gap-6 text-xs font-semibold">
                     {[
@@ -1128,7 +1129,7 @@ function Preview() {
                       <div className="grid md:grid-cols-2 gap-6 text-foreground">
                         <div className={theme.cardBg + " p-6 flex flex-col items-center"}>
                           <div className={`h-24 w-24 flex items-center justify-center ${theme.fontHead} text-3xl font-bold mb-4 ${theme.avatar}`}>
-                            {wedding.groom.nickname.charAt(0).toUpperCase()}
+                            {((wedding.groom?.nickname || "G").charAt(0) || "G").toUpperCase()}
                           </div>
                           <h3 className={`${theme.fontHead} text-xl font-black capitalize`}>{wedding.groom.fullName}</h3>
                           <p className="text-xs text-muted-foreground mt-2 text-center">
@@ -1138,7 +1139,7 @@ function Preview() {
                         </div>
                         <div className={theme.cardBg + " p-6 flex flex-col items-center"}>
                           <div className={`h-24 w-24 flex items-center justify-center ${theme.fontHead} text-3xl font-bold mb-4 ${theme.avatar}`}>
-                            {wedding.bride.nickname.charAt(0).toUpperCase()}
+                            {((wedding.bride?.nickname || "B").charAt(0) || "B").toUpperCase()}
                           </div>
                           <h3 className={`${theme.fontHead} text-xl font-black capitalize`}>{wedding.bride.fullName}</h3>
                           <p className="text-xs text-muted-foreground mt-2 text-center">

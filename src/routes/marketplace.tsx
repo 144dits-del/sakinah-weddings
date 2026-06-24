@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { TemplateCard } from "@/components/site/TemplateCard";
@@ -14,19 +14,20 @@ type Filter = "all" | "gratis" | "premium" | "popular";
 
 function Marketplace() {
   const [filter, setFilter] = useState<Filter>("all");
-  const [templatesList] = useState(() => {
+  const [templatesList, setTemplatesList] = useState(templates);
+
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("sakinah_admin_tmpls");
       if (stored) {
         try {
-          return JSON.parse(stored);
+          setTemplatesList(JSON.parse(stored));
         } catch (e) {
           console.error(e);
         }
       }
     }
-    return templates;
-  });
+  }, []);
 
   const list = templatesList.filter(t =>
     filter === "all" ? true :
