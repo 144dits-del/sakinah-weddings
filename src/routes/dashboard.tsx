@@ -244,17 +244,31 @@ function Dashboard() {
     // Muat Kado
     setKadoActive(localStorage.getItem("sakinah_kado_active") === "true");
     const storedRek = localStorage.getItem("sakinah_kado_rekening");
-    setKadoRekening(storedRek ? JSON.parse(storedRek) : []);
+    let reks = [];
+    if (storedRek) {
+      try {
+        const parsed = JSON.parse(storedRek);
+        if (Array.isArray(parsed)) reks = parsed;
+      } catch (e) {}
+    }
+    setKadoRekening(reks);
     setKadoCara(localStorage.getItem("sakinah_kado_cara") || "Silahkan transfer ke rekening tertera untuk memberikan kado digital.");
 
     // Muat Bahasa custom
     const storedLang = localStorage.getItem("sakinah_custom_language");
-    setCustomLanguage(storedLang ? JSON.parse(storedLang) : {
+    let langs = {
       coverText: "Akan segera melangsungkan pernikahan",
       coverButton: "Buka Undangan",
       openingTitle: "Assalamu'alaikum",
       openingText: "Dengan Rahmat Allah yang Maha Kuasa...",
-    });
+    };
+    if (storedLang) {
+      try {
+        const parsed = JSON.parse(storedLang);
+        if (parsed && typeof parsed === "object") langs = { ...langs, ...parsed };
+      } catch (e) {}
+    }
+    setCustomLanguage(langs);
 
     // Muat Informasi Undangan
     setTurutMengundang(localStorage.getItem("sakinah_turut_mengundang") || "Seluruh Keluarga Besar");
@@ -424,7 +438,13 @@ function Dashboard() {
       
       // Add successful transaction to simulated history
       const storedTxs = localStorage.getItem("sakinah_admin_txs");
-      const currentTxs = storedTxs ? JSON.parse(storedTxs) : [];
+      let currentTxs = [];
+      if (storedTxs) {
+        try {
+          const parsed = JSON.parse(storedTxs);
+          if (Array.isArray(parsed)) currentTxs = parsed;
+        } catch (e) {}
+      }
       const newTx = {
         id: `TRX${Math.floor(1000 + Math.random() * 9000)}`,
         user: weddingData.groom.nickname || "User",

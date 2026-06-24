@@ -445,19 +445,76 @@ function Admin() {
     const storedComps = localStorage.getItem("sakinah_admin_comps");
     const storedSettings = localStorage.getItem("sakinah_admin_builder_settings");
 
-    setUsersList(storedUsers ? JSON.parse(storedUsers) : defaultUsers);
-    setTransactionsList(storedTxs ? JSON.parse(storedTxs) : defaultTransactions);
-    setTemplatesList(storedTmpls ? JSON.parse(storedTmpls) : defaultTemplates);
-    setWebsitesList(storedWebs ? JSON.parse(storedWebs) : [
+    let users = defaultUsers;
+    if (storedUsers) {
+      try {
+        const parsed = JSON.parse(storedUsers);
+        if (Array.isArray(parsed)) users = parsed;
+      } catch (e) {
+        console.error("Error parsing storedUsers", e);
+      }
+    }
+    setUsersList(users);
+
+    let txs = defaultTransactions;
+    if (storedTxs) {
+      try {
+        const parsed = JSON.parse(storedTxs);
+        if (Array.isArray(parsed)) txs = parsed;
+      } catch (e) {
+        console.error("Error parsing storedTxs", e);
+      }
+    }
+    setTransactionsList(txs);
+
+    let tmpls = defaultTemplates;
+    if (storedTmpls) {
+      try {
+        const parsed = JSON.parse(storedTmpls);
+        if (Array.isArray(parsed)) tmpls = parsed;
+      } catch (e) {
+        console.error("Error parsing storedTmpls", e);
+      }
+    }
+    setTemplatesList(tmpls);
+
+    let webs = [
       { sub: "di-ra", groom: "bibi", bride: "rarw", pkg: "Mawaddah", status: "Aktif", date: "30 Mei 2026" },
       { sub: "andisari", groom: "Andi", bride: "Sari", pkg: "Warahmah", status: "Aktif", date: "28 Mei 2026" },
       { sub: "budidewi", groom: "Budi", bride: "Dewi", pkg: "Sakinah", status: "Expired", date: "20 Mei 2026" },
-    ]);
+    ];
+    if (storedWebs) {
+      try {
+        const parsed = JSON.parse(storedWebs);
+        if (Array.isArray(parsed)) webs = parsed;
+      } catch (e) {
+        console.error("Error parsing storedWebs", e);
+      }
+    }
+    setWebsitesList(webs);
 
-    const loadedFiles = storedFiles ? JSON.parse(storedFiles) : initialFileContents;
+    let loadedFiles = initialFileContents;
+    if (storedFiles) {
+      try {
+        const parsed = JSON.parse(storedFiles);
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) loadedFiles = parsed;
+      } catch (e) {
+        console.error("Error parsing storedFiles", e);
+      }
+    }
     setFileContents(loadedFiles);
     setEditorContent(loadedFiles["templates/sakinah/config.json"] || "");
-    setComponentsList(storedComps ? JSON.parse(storedComps) : initialComponents);
+
+    let comps = initialComponents;
+    if (storedComps) {
+      try {
+        const parsed = JSON.parse(storedComps);
+        if (Array.isArray(parsed)) comps = parsed;
+      } catch (e) {
+        console.error("Error parsing storedComps", e);
+      }
+    }
+    setComponentsList(comps);
 
     if (storedSettings) {
       try {
@@ -636,14 +693,45 @@ function Admin() {
         const storedTmpls = localStorage.getItem("sakinah_admin_tmpls");
         const storedWebs = localStorage.getItem("sakinah_admin_webs");
 
-        setUsersList(storedUsers ? JSON.parse(storedUsers) : defaultUsers);
-        setTransactionsList(storedTxs ? JSON.parse(storedTxs) : defaultTransactions);
-        setTemplatesList(storedTmpls ? JSON.parse(storedTmpls) : defaultTemplates);
-        setWebsitesList(storedWebs ? JSON.parse(storedWebs) : [
+        let users = defaultUsers;
+        if (storedUsers) {
+          try {
+            const parsed = JSON.parse(storedUsers);
+            if (Array.isArray(parsed)) users = parsed;
+          } catch (e) {}
+        }
+        setUsersList(users);
+
+        let txs = defaultTransactions;
+        if (storedTxs) {
+          try {
+            const parsed = JSON.parse(storedTxs);
+            if (Array.isArray(parsed)) txs = parsed;
+          } catch (e) {}
+        }
+        setTransactionsList(txs);
+
+        let tmpls = defaultTemplates;
+        if (storedTmpls) {
+          try {
+            const parsed = JSON.parse(storedTmpls);
+            if (Array.isArray(parsed)) tmpls = parsed;
+          } catch (e) {}
+        }
+        setTemplatesList(tmpls);
+
+        let webs = [
           { sub: "di-ra", groom: "bibi", bride: "rarw", pkg: "Mawaddah", status: "Aktif", date: "30 Mei 2026" },
           { sub: "andisari", groom: "Andi", bride: "Sari", pkg: "Warahmah", status: "Aktif", date: "28 Mei 2026" },
           { sub: "budidewi", groom: "Budi", bride: "Dewi", pkg: "Sakinah", status: "Expired", date: "20 Mei 2026" },
-        ]);
+        ];
+        if (storedWebs) {
+          try {
+            const parsed = JSON.parse(storedWebs);
+            if (Array.isArray(parsed)) webs = parsed;
+          } catch (e) {}
+        }
+        setWebsitesList(webs);
       } else {
         toast.error("Akses Ditolak! Kredensial administrator tidak valid.");
       }
