@@ -74,7 +74,7 @@ const packageRequirements: Record<string, "Mawaddah" | "Warahmah"> = {
 };
 
 // 10 Tema Undangan
-const templatesList = [
+const defaultDashboardTemplates = [
   { id: "basic", name: "Basic Theme", type: "Basic", bg: "from-gray-100 to-slate-200", icon: "✏️" },
   { id: "sakinah", name: "Sakinah Theme", type: "Basic", bg: "from-amber-50 to-amber-100", icon: "🤍", popular: true },
   { id: "monochrome", name: "monochrome Theme", type: "Basic", bg: "from-zinc-800 to-zinc-900", icon: "🖤" },
@@ -93,6 +93,29 @@ function Dashboard() {
   const { tab } = Route.useSearch();
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [activePkg, setActivePkg] = useState("Sakinah");
+  
+  // Muat daftar template dari localStorage jika ada, dipetakan ke format dashboard
+  const [templatesList, setTemplatesList] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("sakinah_admin_tmpls");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          return parsed.map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            type: t.type === "gratis" ? "Basic" : "Premium",
+            icon: t.thumbnail,
+            popular: t.popular || false
+          }));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+    return defaultDashboardTemplates;
+  });
+
   const [weddingData, setWeddingData] = useState<WeddingData>(getStoredWeddingData());
   const [selectedTemplate, setSelectedTemplate] = useState("sakinah");
   const [selectedMusic, setSelectedMusic] = useState("Beautiful - Instrumental");
@@ -238,13 +261,32 @@ function Dashboard() {
     setTurutMengundang(localStorage.getItem("sakinah_turut_mengundang") || "Seluruh Keluarga Besar");
     setInvitationNote(localStorage.getItem("sakinah_invitation_note") || "Tanpa mengurangi rasa hormat, mohon kehadirannya.");
 
-    // Dengarkan perubahan paket global
+    // Dengarkan perubahan paket global & templates list
     const handlePkgChange = () => {
       setActivePkg(getStoredPackage());
     };
+    const handleTemplatesChange = () => {
+      const stored = localStorage.getItem("sakinah_admin_tmpls");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setTemplatesList(parsed.map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            type: t.type === "gratis" ? "Basic" : "Premium",
+            icon: t.thumbnail,
+            popular: t.popular || false
+          })));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
     window.addEventListener("sakinah_package_changed", handlePkgChange);
+    window.addEventListener("sakinah_admin_tmpls_changed", handleTemplatesChange);
     return () => {
       window.removeEventListener("sakinah_package_changed", handlePkgChange);
+      window.removeEventListener("sakinah_admin_tmpls_changed", handleTemplatesChange);
     };
   }, []);
 

@@ -9,6 +9,7 @@ import {
   getStoredWeddingData,
   getStoredPackage,
   WeddingData,
+  dummyWedding,
 } from "@/lib/dummy-data";
 import {
   Heart,
@@ -261,7 +262,15 @@ export default function FullScreenInvitation({
       const subSaved = localStorage.getItem(`sakinah_wedding_data_${subdomain}`);
       if (subSaved) {
         try {
-          storedData = JSON.parse(subSaved);
+          const parsed = JSON.parse(subSaved);
+          storedData = {
+            ...dummyWedding,
+            ...parsed,
+            groom: { ...dummyWedding.groom, ...parsed.groom },
+            bride: { ...dummyWedding.bride, ...parsed.bride },
+            akad: { ...dummyWedding.akad, ...parsed.akad },
+            resepsi: { ...dummyWedding.resepsi, ...parsed.resepsi },
+          };
         } catch (e) {}
       } else {
         // If not saved, but our current localStorage data matches, use it
@@ -315,7 +324,15 @@ export default function FullScreenInvitation({
         const subSaved = localStorage.getItem(`sakinah_wedding_data_${subdomain}`);
         if (subSaved) {
           try {
-            freshData = JSON.parse(subSaved);
+            const parsed = JSON.parse(subSaved);
+            freshData = {
+              ...dummyWedding,
+              ...parsed,
+              groom: { ...dummyWedding.groom, ...parsed.groom },
+              bride: { ...dummyWedding.bride, ...parsed.bride },
+              akad: { ...dummyWedding.akad, ...parsed.akad },
+              resepsi: { ...dummyWedding.resepsi, ...parsed.resepsi },
+            };
           } catch (e) {}
         }
       }

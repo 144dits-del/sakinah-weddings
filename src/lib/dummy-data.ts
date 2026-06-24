@@ -95,7 +95,15 @@ export const getStoredWeddingData = (): WeddingData => {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      return {
+        ...dummyWedding,
+        ...parsed,
+        groom: { ...dummyWedding.groom, ...parsed.groom },
+        bride: { ...dummyWedding.bride, ...parsed.bride },
+        akad: { ...dummyWedding.akad, ...parsed.akad },
+        resepsi: { ...dummyWedding.resepsi, ...parsed.resepsi },
+      };
     } catch (e) {
       console.error(e);
     }

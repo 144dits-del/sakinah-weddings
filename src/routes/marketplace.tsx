@@ -14,7 +14,21 @@ type Filter = "all" | "gratis" | "premium" | "popular";
 
 function Marketplace() {
   const [filter, setFilter] = useState<Filter>("all");
-  const list = templates.filter(t =>
+  const [templatesList] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("sakinah_admin_tmpls");
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+    return templates;
+  });
+
+  const list = templatesList.filter(t =>
     filter === "all" ? true :
     filter === "popular" ? t.popular :
     t.type === filter

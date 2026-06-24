@@ -282,6 +282,7 @@ function Admin() {
   // Add Template Form State
   const [newTemplateName, setNewTemplateName] = useState("");
   const [newTemplateType, setNewTemplateType] = useState("premium");
+  const [newTemplateMinPkg, setNewTemplateMinPkg] = useState("Warahmah");
   const [newTemplateIcon, setNewTemplateIcon] = useState("✨");
   const [showAddTemplateModal, setShowAddTemplateModal] = useState(false);
 
@@ -317,6 +318,100 @@ function Admin() {
   const [previewTemplateId, setPreviewTemplateId] = useState("t1");
   const [mobilePreviewTab, setMobilePreviewTab] = useState("Home");
   const [previewModePhone, setPreviewModePhone] = useState(true);
+
+  const getPreviewTheme = (id: string) => {
+    const norm = id.toLowerCase();
+    const isMono = norm === "monochrome" || norm === "basic" || norm === "t6" || norm === "t9";
+    const isRose = norm === "rose_red" || norm === "t2" || norm === "blossom" || norm === "bliss";
+    const isMawaddah = norm === "t3" || norm === "chic";
+    const isLuxury = norm === "dark_gold" || norm === "dark_gold_2" || norm === "t4";
+    const isGarden = norm === "bloom" || norm === "t5" || norm === "bloom_bliss" || norm === "blossom_celebration";
+    const isRoyal = norm === "t7";
+    const isSweet = norm === "t8" || norm === "blossom";
+    const isSakinah = norm === "t10" || norm === "t1";
+
+    if (isMono) {
+      return {
+        bg: "bg-[#ffffff]",
+        text: "text-zinc-900",
+        primary: "#09090b",
+        fontHead: "font-serif",
+        emoji: "✦",
+        badge: "bg-zinc-950 text-white"
+      };
+    }
+    if (isRose) {
+      return {
+        bg: "bg-[#fffdfd]",
+        text: "text-rose-950",
+        primary: "#f43f5e",
+        fontHead: "font-display",
+        emoji: "🌹",
+        badge: "bg-rose-500 text-white"
+      };
+    }
+    if (isMawaddah) {
+      return {
+        bg: "bg-[#fffdf9]",
+        text: "text-amber-950",
+        primary: "#d97706",
+        fontHead: "font-display",
+        emoji: "💛",
+        badge: "bg-amber-600 text-white"
+      };
+    }
+    if (isLuxury) {
+      return {
+        bg: "bg-[#09090b]",
+        text: "text-stone-100",
+        primary: "#fbbf24",
+        fontHead: "font-display",
+        emoji: "✨",
+        badge: "bg-amber-500 text-black"
+      };
+    }
+    if (isGarden) {
+      return {
+        bg: "bg-[#fcfdfc]",
+        text: "text-emerald-950",
+        primary: "#059669",
+        fontHead: "font-display",
+        emoji: "🌿",
+        badge: "bg-emerald-600 text-white"
+      };
+    }
+    if (isRoyal) {
+      return {
+        bg: "bg-[#0f172a]",
+        text: "text-amber-100",
+        primary: "#f59e0b",
+        fontHead: "font-display",
+        emoji: "👑",
+        badge: "bg-amber-500 text-slate-950"
+      };
+    }
+    if (isSweet) {
+      return {
+        bg: "bg-[#fffdfd]",
+        text: "text-purple-950",
+        primary: "#ec4899",
+        fontHead: "font-display",
+        emoji: "🌸",
+        badge: "bg-pink-500 text-white"
+      };
+    }
+    // Default Sakinah Theme
+    return {
+      bg: "bg-[#fdfbf7]",
+      text: "text-stone-800",
+      primary: "#8c7853",
+      fontHead: "font-serif",
+      emoji: "🕊️",
+      badge: "bg-gold text-primary-foreground"
+    };
+  };
+
+  const simTheme = getPreviewTheme(previewTemplateId);
 
   // Load central state from localStorage or fallback
   useEffect(() => {
@@ -496,9 +591,13 @@ function Admin() {
   const handleDuplicateTemplate = (id: string) => {
     const tmpl = templatesList.find(t => t.id === id);
     if (!tmpl) return;
+    const maxId = templatesList.reduce((max, t) => {
+      const num = parseInt(t.id.replace("t", ""), 10);
+      return isNaN(num) ? max : Math.max(max, num);
+    }, 0);
     const newTmpl = {
       ...tmpl,
-      id: "t" + (templatesList.length + 1),
+      id: "t" + (maxId + 1),
       name: `${tmpl.name} (Copy)`,
       popular: false
     };
@@ -553,6 +652,7 @@ function Admin() {
   const handleSaveTemplates = (next: any[]) => {
     setTemplatesList(next);
     localStorage.setItem("sakinah_admin_tmpls", JSON.stringify(next));
+    window.dispatchEvent(new Event("sakinah_admin_tmpls_changed"));
   };
 
   const handleSaveWebsites = (next: any[]) => {
@@ -621,11 +721,16 @@ function Admin() {
       toast.error("Nama template wajib diisi!");
       return;
     }
+    const maxId = templatesList.reduce((max, t) => {
+      const num = parseInt(t.id.replace("t", ""), 10);
+      return isNaN(num) ? max : Math.max(max, num);
+    }, 0);
     const newTmpl = {
-      id: "t" + (templatesList.length + 1),
+      id: "t" + (maxId + 1),
       name: newTemplateName,
       thumbnail: newTemplateIcon,
-      type: newTemplateType as "gratis" | "premium",
+      type: (newTemplateMinPkg === "Sakinah" ? "gratis" : "premium") as "gratis" | "premium",
+      minPackage: newTemplateMinPkg,
       popular: false,
     };
     const next = [...templatesList, newTmpl];
@@ -1330,7 +1435,7 @@ function Admin() {
                 <tbody>
                   {templatesList.map((tmpl) => {
                     const isPremium = tmpl.type === "premium";
-                    const minPkg = tmpl.id === "t1" || tmpl.id === "t3" || tmpl.id === "t6" || tmpl.id === "t8" ? "Sakinah" : tmpl.id === "t10" ? "Mawaddah" : "Warahmah";
+                    const minPkg = tmpl.minPackage || (tmpl.id === "t1" || tmpl.id === "t3" || tmpl.id === "t6" || tmpl.id === "t8" ? "Sakinah" : tmpl.id === "t10" ? "Mawaddah" : "Warahmah");
                     return (
                       <tr key={tmpl.id} className="border-b border-border/40 last:border-0 hover:bg-muted/25">
                         <td className="p-3 text-xl">{tmpl.thumbnail}</td>
@@ -1489,40 +1594,40 @@ function Admin() {
               <div className="w-full max-w-sm aspect-[9/19] rounded-[2.5rem] overflow-hidden border-8 border-zinc-950 bg-background shadow-2xl relative flex flex-col justify-between h-[680px]">
                 
                 {/* Simulated Content Area (Floral Elegant White theme as requested) */}
-                <div className="flex-1 overflow-y-auto scrollbar-none bg-[#fdfbf7] p-5 pb-16 text-center select-none text-stone-800 space-y-4">
+                <div className={`flex-1 overflow-y-auto scrollbar-none p-5 pb-16 text-center select-none space-y-4 ${simTheme.bg} ${simTheme.text}`}>
                   
                   {/* Visual Header / Floral Graphic representation */}
-                  <div className="w-full text-center text-xs text-[#8c7853] py-2 border-b border-[#8c7853]/15 font-serif italic">
-                    🌸 Floral Elegance Theme 🌸
+                  <div style={{ color: simTheme.primary, borderColor: simTheme.primary + '26' }} className="w-full text-center text-xs py-2 border-b font-serif italic">
+                    {simTheme.emoji} {templatesList.find(t => t.id === previewTemplateId)?.name || "Preview"} Theme {simTheme.emoji}
                   </div>
 
                   {mobilePreviewTab === "Home" && (
                     <div className="py-12 space-y-4 animate-fade-in">
-                      <span className="text-3xl animate-bounce inline-block">🕊️</span>
-                      <div className="text-[9px] tracking-[0.3em] uppercase text-[#8c7853] font-bold">THE WEDDING OF</div>
-                      <h1 className="font-display text-4xl font-extrabold text-[#8c7853] font-serif">Adi & Rara</h1>
+                      <span className="text-3xl animate-bounce inline-block">{simTheme.emoji}</span>
+                      <div style={{ color: simTheme.primary }} className="text-[9px] tracking-[0.3em] uppercase font-bold">THE WEDDING OF</div>
+                      <h1 style={{ color: simTheme.primary }} className={`text-4xl font-extrabold ${simTheme.fontHead}`}>Adi & Rara</h1>
                       <p className="text-[10px] text-muted-foreground italic leading-relaxed">
                         Dengan memohon rahmat & ridho Allah SWT, kami mengundang Anda untuk merayakan pernikahan kami.
                       </p>
-                      <div className="pt-6 text-xs font-bold text-[#8c7853]">Senin, 31 Agustus 2026</div>
+                      <div style={{ color: simTheme.primary }} className="pt-6 text-xs font-bold">Senin, 31 Agustus 2026</div>
                     </div>
                   )}
 
                   {mobilePreviewTab === "Mempelai" && (
                     <div className="py-4 space-y-5 text-center animate-fade-in">
-                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Kedua Mempelai</h2>
+                      <h2 style={{ color: simTheme.primary }} className="font-display text-xl font-semibold">Kedua Mempelai</h2>
                       
-                      <div className="p-4 border border-[#8c7853]/20 rounded-2xl bg-white/80 shadow-sm space-y-1">
-                        <div className="mx-auto h-12 w-12 rounded-full bg-[#8c7853] text-white flex items-center justify-center font-bold text-sm">A</div>
-                        <h3 className="font-bold text-sm mt-2 text-[#8c7853]">Adi Sumaryadi</h3>
+                      <div style={{ borderColor: simTheme.primary + '33' }} className="p-4 border rounded-2xl bg-white/80 shadow-sm space-y-1">
+                        <div style={{ backgroundColor: simTheme.primary }} className="mx-auto h-12 w-12 rounded-full text-white flex items-center justify-center font-bold text-sm">A</div>
+                        <h3 style={{ color: simTheme.primary }} className="font-bold text-sm mt-2">Adi Sumaryadi</h3>
                         <p className="text-[9px] text-muted-foreground">Putra dari Sumarmo & Kantun</p>
                       </div>
 
-                      <div className="text-lg text-[#8c7853] italic">&</div>
+                      <div style={{ color: simTheme.primary }} className="text-lg italic">&</div>
 
-                      <div className="p-4 border border-[#8c7853]/20 rounded-2xl bg-white/80 shadow-sm space-y-1">
-                        <div className="mx-auto h-12 w-12 rounded-full bg-[#8c7853] text-white flex items-center justify-center font-bold text-sm">R</div>
-                        <h3 className="font-bold text-sm mt-2 text-[#8c7853]">Siti Salamah Azzahra</h3>
+                      <div style={{ borderColor: simTheme.primary + '33' }} className="p-4 border rounded-2xl bg-white/80 shadow-sm space-y-1">
+                        <div style={{ backgroundColor: simTheme.primary }} className="mx-auto h-12 w-12 rounded-full text-white flex items-center justify-center font-bold text-sm">R</div>
+                        <h3 style={{ color: simTheme.primary }} className="font-bold text-sm mt-2">Siti Salamah Azzahra</h3>
                         <p className="text-[9px] text-muted-foreground">Putri dari Maman & Imas</p>
                       </div>
                     </div>
@@ -1530,17 +1635,17 @@ function Admin() {
 
                   {mobilePreviewTab === "Undangan" && (
                     <div className="py-4 space-y-4 animate-fade-in text-center">
-                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Waktu & Tempat</h2>
+                      <h2 style={{ color: simTheme.primary }} className="font-display text-xl font-semibold">Waktu & Tempat</h2>
                       
-                      <div className="p-4 border border-[#8c7853]/20 rounded-2xl bg-white shadow-sm space-y-2">
-                        <h3 className="font-bold text-xs text-[#8c7853] border-b pb-1">Akad Nikah</h3>
+                      <div style={{ borderColor: simTheme.primary + '33' }} className="p-4 border rounded-2xl bg-white shadow-sm space-y-2">
+                        <h3 style={{ color: simTheme.primary }} className="font-bold text-xs border-b pb-1">Akad Nikah</h3>
                         <p className="text-[10px] text-muted-foreground">Senin, 31 Agustus 2026</p>
                         <p className="text-[10px] text-muted-foreground">Pukul 12:00 WIB - Selesai</p>
                         <p className="text-[9px] font-medium text-stone-600 mt-1">Aula Masjid ABRI Cimahi</p>
                       </div>
 
-                      <div className="p-4 border border-[#8c7853]/20 rounded-2xl bg-white shadow-sm space-y-2">
-                        <h3 className="font-bold text-xs text-[#8c7853] border-b pb-1">Resepsi Pernikahan</h3>
+                      <div style={{ borderColor: simTheme.primary + '33' }} className="p-4 border rounded-2xl bg-white shadow-sm space-y-2">
+                        <h3 style={{ color: simTheme.primary }} className="font-bold text-xs border-b pb-1">Resepsi Pernikahan</h3>
                         <p className="text-[10px] text-muted-foreground">Senin, 31 Agustus 2026</p>
                         <p className="text-[10px] text-muted-foreground">Pukul 12:00 WIB - Selesai</p>
                         <p className="text-[9px] font-medium text-stone-600 mt-1">Aula Masjid ABRI Cimahi</p>
@@ -1550,13 +1655,13 @@ function Admin() {
 
                   {mobilePreviewTab === "Map" && (
                     <div className="py-6 space-y-4 animate-fade-in text-center">
-                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Peta Lokasi</h2>
-                      <div className="h-32 rounded-xl bg-muted border border-border/80 flex flex-col items-center justify-center p-3">
-                        <MapPin className="h-6 w-6 text-[#8c7853] mb-1" />
+                      <h2 style={{ color: simTheme.primary }} className="font-display text-xl font-semibold">Peta Lokasi</h2>
+                      <div style={{ borderColor: simTheme.primary + '33' }} className="h-32 rounded-xl bg-muted border flex flex-col items-center justify-center p-3">
+                        <MapPin style={{ color: simTheme.primary }} className="h-6 w-6 mb-1" />
                         <span className="text-[10px] font-bold">Aula Masjid ABRI Cimahi</span>
                         <span className="text-[8px] text-muted-foreground mt-0.5">Jalan Gatot Subroto Kota Cimahi</span>
                       </div>
-                      <Button size="sm" className="bg-[#8c7853] hover:bg-[#726241] text-white text-[9px] h-7 rounded-full">
+                      <Button style={{ backgroundColor: simTheme.primary }} size="sm" className="hover:opacity-90 text-white text-[9px] h-7 rounded-full">
                         Buka Google Maps
                       </Button>
                     </div>
@@ -1564,15 +1669,15 @@ function Admin() {
 
                   {mobilePreviewTab === "Cerita" && (
                     <div className="py-4 space-y-4 animate-fade-in text-left px-2">
-                      <h2 className="font-display text-xl text-[#8c7853] font-semibold text-center mb-2">Kisah Cinta</h2>
-                      <div className="border-l border-[#8c7853]/40 pl-4 space-y-4 py-1">
+                      <h2 style={{ color: simTheme.primary }} className="font-display text-xl font-semibold text-center mb-2">Kisah Cinta</h2>
+                      <div style={{ borderColor: simTheme.primary + '66' }} className="border-l pl-4 space-y-4 py-1">
                         <div>
-                          <h4 className="font-bold text-xs text-[#8c7853]">Pertama Kali Berjumpa</h4>
+                          <h4 style={{ color: simTheme.primary }} className="font-bold text-xs">Pertama Kali Berjumpa</h4>
                           <p className="text-[8px] text-muted-foreground">16 Oktober 2014</p>
                           <p className="text-[10px] text-stone-600 mt-0.5">Pertama kali berjumpa di kampus.</p>
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#8c7853]">Prosesi Lamaran</h4>
+                          <h4 style={{ color: simTheme.primary }} className="font-bold text-xs">Prosesi Lamaran</h4>
                           <p className="text-[8px] text-muted-foreground">15 Maret 2015</p>
                           <p className="text-[10px] text-stone-600 mt-0.5">Pertemuan formal kedua keluarga besar.</p>
                         </div>
@@ -1582,7 +1687,7 @@ function Admin() {
 
                   {mobilePreviewTab === "Photo" && (
                     <div className="py-4 space-y-3 animate-fade-in text-center">
-                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Galeri Foto</h2>
+                      <h2 style={{ color: simTheme.primary }} className="font-display text-xl font-semibold">Galeri Foto</h2>
                       <div className="grid grid-cols-3 gap-1.5">
                         {Array.from({ length: 6 }).map((_, i) => (
                           <div key={i} className="aspect-square bg-stone-200 rounded-lg flex items-center justify-center text-[8px] text-muted-foreground font-semibold">
@@ -1595,9 +1700,9 @@ function Admin() {
 
                   {mobilePreviewTab === "Ucapan" && (
                     <div className="py-4 space-y-4 animate-fade-in text-center">
-                      <h2 className="font-display text-xl text-[#8c7853] font-semibold">Kirim Doa Restu</h2>
+                      <h2 style={{ color: simTheme.primary }} className="font-display text-xl font-semibold">Kirim Doa Restu</h2>
                       <div className="p-3 bg-white border rounded-xl space-y-2 text-left">
-                        <div className="text-[8px] font-bold text-[#8c7853]">Tamu: Budi & Ani</div>
+                        <div style={{ color: simTheme.primary }} className="text-[8px] font-bold">Tamu: Budi & Ani</div>
                         <p className="text-[10px] text-stone-600 leading-relaxed italic">"Selamat menempuh hidup baru ya Rara & Adi! Semoga sakinah mawaddah warahmah."</p>
                       </div>
                     </div>
@@ -1621,12 +1726,13 @@ function Admin() {
                       <button
                         key={item.tab}
                         onClick={() => setMobilePreviewTab(item.tab)}
+                        style={{ color: isActive ? simTheme.primary : undefined }}
                         className={`flex flex-col items-center justify-center gap-0.5 w-12 h-full transition relative border-0 bg-transparent cursor-pointer
-                          ${isActive ? "text-[#8c7853]" : "hover:text-[#8c7853]"}`}
+                          ${isActive ? "" : "hover:text-[#8c7853]"}`}
                       >
                         <item.icon className="h-3 w-3 shrink-0" />
                         <span>{item.tab}</span>
-                        {isActive && <span className="absolute bottom-1 w-3 h-0.5 bg-[#8c7853] rounded-full" />}
+                        {isActive && <span style={{ backgroundColor: simTheme.primary }} className="absolute bottom-1 w-3 h-0.5 rounded-full" />}
                       </button>
                     );
                   })}
@@ -1980,14 +2086,15 @@ function Admin() {
               </div>
 
               <div className="space-y-1.5">
-                <Label>Kategori Paket</Label>
+                <Label>Paket Minimal</Label>
                 <select
-                  value={newTemplateType}
-                  onChange={(e) => setNewTemplateType(e.target.value)}
+                  value={newTemplateMinPkg}
+                  onChange={(e) => setNewTemplateMinPkg(e.target.value)}
                   className="w-full text-xs px-3 py-2.5 rounded-xl border border-border bg-background"
                 >
-                  <option value="gratis">Sakinah (Gratis)</option>
-                  <option value="premium">Mawaddah / Warahmah (Premium)</option>
+                  <option value="Sakinah">Sakinah (Basic/Gratis)</option>
+                  <option value="Mawaddah">Mawaddah (Premium)</option>
+                  <option value="Warahmah">Warahmah (Premium)</option>
                 </select>
               </div>
 
