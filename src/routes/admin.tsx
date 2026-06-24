@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +50,8 @@ import {
   Gift,
   MessageCircle,
   Volume2,
+  Compass,
+  Home as HomeIcon,
 } from "lucide-react";
 
 // Register Route with TanStack Router query params
@@ -65,7 +67,6 @@ export const Route = createFileRoute("/admin")({
 const menu = [
   "Dashboard",
   "User",
-  "Template",
   "Template Builder",
   "File Template",
   "Komponen Template",
@@ -260,6 +261,7 @@ const initialComponents = [
 
 function Admin() {
   const { tab } = Route.useSearch();
+  const navigate = useNavigate();
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   
   // Admin Login Portal States
@@ -281,6 +283,7 @@ function Admin() {
   const [newTemplateName, setNewTemplateName] = useState("");
   const [newTemplateType, setNewTemplateType] = useState("premium");
   const [newTemplateIcon, setNewTemplateIcon] = useState("✨");
+  const [showAddTemplateModal, setShowAddTemplateModal] = useState(false);
 
   // ================= ADMIN TEMPLATE BUILDER STATES =================
   const [selectedFile, setSelectedFile] = useState("templates/sakinah/config.json");
@@ -441,7 +444,7 @@ function Admin() {
       setSelectedFile(matchedFile);
       setEditorContent(fileContents[matchedFile]);
       // Switch tab to Template Builder using route navigation
-      window.location.search = "?tab=Template+Builder";
+      navigate({ search: (prev) => ({ ...prev, tab: "Template Builder" }) });
       toast.success(`Mengedit komponen: ${tag}Section.tsx`);
     } else {
       // Fallback
@@ -449,7 +452,7 @@ function Admin() {
       if (firstSectionFile) {
         setSelectedFile(firstSectionFile);
         setEditorContent(fileContents[firstSectionFile]);
-        window.location.search = "?tab=Template+Builder";
+        navigate({ search: (prev) => ({ ...prev, tab: "Template Builder" }) });
       } else {
         toast.error(`File komponen ${tag}Section tidak ditemukan.`);
       }
@@ -458,7 +461,7 @@ function Admin() {
 
   const handlePreviewComponent = (tag: string) => {
     setMobilePreviewTab(tag === "cover" ? "Home" : tag === "couple" ? "Mempelai" : tag === "event" ? "Undangan" : tag === "map" ? "Map" : tag === "story" ? "Cerita" : tag === "gallery" ? "Photo" : tag === "wishes" ? "Ucapan" : "Home");
-    window.location.search = "?tab=Preview+Template";
+    navigate({ search: (prev) => ({ ...prev, tab: "Preview Template" }) });
     toast.info(`Membuka preview untuk section: ${tag}`);
   };
 
@@ -628,6 +631,7 @@ function Admin() {
     const next = [...templatesList, newTmpl];
     handleSaveTemplates(next);
     setNewTemplateName("");
+    setShowAddTemplateModal(false);
     toast.success(`Berhasil menambahkan template: ${newTemplateName}!`);
   };
 
@@ -1305,7 +1309,7 @@ function Admin() {
               <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                 Daftar Template Undangan Pernikahan Sistem ({templatesList.length})
               </h3>
-              <Button onClick={() => window.location.search = "?tab=Template"} className="bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full h-8 px-4 font-semibold">
+              <Button onClick={() => setShowAddTemplateModal(true)} className="bg-gold hover:bg-gold/90 text-primary-foreground text-xs rounded-full h-8 px-4 font-semibold">
                 + Tambah Template
               </Button>
             </div>
@@ -1350,7 +1354,7 @@ function Admin() {
                               setTmplName(tmpl.name);
                               setTmplThumbnail(tmpl.thumbnail);
                               setTmplMinPackage(minPkg);
-                              window.location.search = "?tab=Template+Builder";
+                              navigate({ search: (prev) => ({ ...prev, tab: "Template Builder" }) });
                             }}
                             className="text-[9px] h-7 rounded-full px-3"
                           >
@@ -1361,7 +1365,7 @@ function Admin() {
                             variant="outline"
                             onClick={() => {
                               setPreviewTemplateId(tmpl.id);
-                              window.location.search = "?tab=Preview+Template";
+                              navigate({ search: (prev) => ({ ...prev, tab: "Preview Template" }) });
                             }}
                             className="text-[9px] h-7 rounded-full px-3"
                           >
@@ -1944,6 +1948,80 @@ function Admin() {
         )}
 
       </main>
+
+      {/* ADD TEMPLATE MODAL */}
+      {showAddTemplateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4">
+          <div className="w-full max-w-md bg-card border border-border rounded-3xl p-6 shadow-2xl relative space-y-4 animate-scale-in">
+            <button
+              onClick={() => setShowAddTemplateModal(false)}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground h-6 w-6 flex items-center justify-center rounded-full hover:bg-muted border-0 bg-transparent cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="space-y-1">
+              <h3 className="font-display font-bold text-lg text-foreground flex items-center gap-2">
+                <Plus className="h-5 w-5 text-gold" /> Tambah Template Baru
+              </h3>
+              <p className="text-xs text-muted-foreground">Buat preset template undangan baru untuk sistem.</p>
+            </div>
+
+            <form onSubmit={handleAddTemplate} className="space-y-4 text-xs">
+              <div className="space-y-1.5">
+                <Label>Nama Template</Label>
+                <Input
+                  value={newTemplateName}
+                  onChange={(e) => setNewTemplateName(e.target.value)}
+                  placeholder="Contoh: Gold Velvet, Sage Garden, dll."
+                  required
+                  className="text-xs rounded-xl h-10 border-border bg-muted/20"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Kategori Paket</Label>
+                <select
+                  value={newTemplateType}
+                  onChange={(e) => setNewTemplateType(e.target.value)}
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-border bg-background"
+                >
+                  <option value="gratis">Sakinah (Gratis)</option>
+                  <option value="premium">Mawaddah / Warahmah (Premium)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Emoji / Ikon Representasi</Label>
+                <Input
+                  value={newTemplateIcon}
+                  onChange={(e) => setNewTemplateIcon(e.target.value)}
+                  placeholder="Contoh: ✨, 🌿, 🌸, 👑"
+                  required
+                  className="text-xs text-center font-bold rounded-xl h-10 border-border bg-muted/20"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowAddTemplateModal(false)}
+                  className="flex-1 rounded-full h-10 font-semibold"
+                >
+                  Batal
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 bg-gold hover:bg-gold/90 text-primary-foreground font-semibold rounded-full h-10"
+                >
+                  Daftarkan Template
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
