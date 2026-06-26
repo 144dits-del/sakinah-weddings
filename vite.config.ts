@@ -1,15 +1,14 @@
 import { defineConfig } from "vite";
-import { cloudflare } from "@cloudflare/vite-plugin";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 
-// Standard Vite config for Cloudflare Workers deployment
-// @cloudflare/vite-plugin handles TanStack Start SSR for Cloudflare Workers
+// Standard Vite config with explicit plugins array.
+// Wrangler's TanStack Start setup wizard will auto-inject cloudflare()
+// at the top of the plugins array and then run the build + deploy.
 export default defineConfig({
   plugins: [
-    cloudflare(),
     TanStackRouterVite({ autoCodeSplitting: true }),
     react(),
     tailwindcss(),
@@ -17,6 +16,11 @@ export default defineConfig({
       projects: ["./tsconfig.json"],
     }),
   ],
+  resolve: {
+    alias: {
+      "@": "/src",
+    },
+  },
   server: {
     port: 8080,
     host: "::",
