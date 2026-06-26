@@ -4,10 +4,11 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
-    "preview": "vite preview",
+    "dev": "vite dev --config vite.config.lovable.js",
+    "build": "vite build --config vite.config.lovable.js",
+    "build:dev": "vite build --config vite.config.lovable.js --mode development",
+    "preview": "vite preview --config vite.config.lovable.js",
+    "build:cloudflare": "vite build",
     "deploy": "wrangler deploy",
     "lint": "eslint .",
     "format": "prettier --write ."

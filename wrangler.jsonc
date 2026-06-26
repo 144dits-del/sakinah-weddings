@@ -6,6 +6,9 @@
     "nodejs_compat"
   ],
   "main": "@tanstack/react-start/server-entry",
+  "build": {
+    "command": "npm run build:cloudflare"
+  },
   "routes": [
     {
       "pattern": "sakinah.studio/*",
