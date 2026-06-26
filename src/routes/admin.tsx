@@ -609,7 +609,7 @@ function Admin() {
       setSelectedFile(matchedFile);
       setEditorContent(fileContents[matchedFile]);
       // Switch tab to Template Builder using route navigation
-      navigate({ search: (prev) => ({ ...prev, tab: "Template Builder" }) });
+      navigate({ search: (prev: any) => ({ ...prev, tab: "Template Builder" }) });
       toast.success(`Mengedit komponen: ${tag}Section.tsx`);
     } else {
       // Fallback
@@ -617,7 +617,7 @@ function Admin() {
       if (firstSectionFile) {
         setSelectedFile(firstSectionFile);
         setEditorContent(fileContents[firstSectionFile]);
-        navigate({ search: (prev) => ({ ...prev, tab: "Template Builder" }) });
+        navigate({ search: (prev: any) => ({ ...prev, tab: "Template Builder" }) });
       } else {
         toast.error(`File komponen ${tag}Section tidak ditemukan.`);
       }
@@ -626,7 +626,7 @@ function Admin() {
 
   const handlePreviewComponent = (tag: string) => {
     setMobilePreviewTab(tag === "cover" ? "Home" : tag === "couple" ? "Mempelai" : tag === "event" ? "Undangan" : tag === "map" ? "Map" : tag === "story" ? "Cerita" : tag === "gallery" ? "Photo" : tag === "wishes" ? "Ucapan" : "Home");
-    navigate({ search: (prev) => ({ ...prev, tab: "Preview Template" }) });
+    navigate({ search: (prev: any) => ({ ...prev, tab: "Preview Template" }) });
     toast.info(`Membuka preview untuk section: ${tag}`);
   };
 
@@ -1560,7 +1560,7 @@ function Admin() {
                               setTmplName(tmpl.name);
                               setTmplThumbnail(tmpl.thumbnail);
                               setTmplMinPackage(minPkg);
-                              navigate({ search: (prev) => ({ ...prev, tab: "Template Builder" }) });
+                              navigate({ search: (prev: any) => ({ ...prev, tab: "Template Builder" }) });
                             }}
                             className="text-[9px] h-7 rounded-full px-3"
                           >
@@ -1571,7 +1571,7 @@ function Admin() {
                             variant="outline"
                             onClick={() => {
                               setPreviewTemplateId(tmpl.id);
-                              navigate({ search: (prev) => ({ ...prev, tab: "Preview Template" }) });
+                              navigate({ search: (prev: any) => ({ ...prev, tab: "Preview Template" }) });
                             }}
                             className="text-[9px] h-7 rounded-full px-3"
                           >
