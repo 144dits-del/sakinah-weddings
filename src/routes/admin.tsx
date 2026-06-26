@@ -262,7 +262,7 @@ const initialComponents = [
 
 function Admin() {
   const { tab } = Route.useSearch();
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: "/admin" });
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   
   // Admin Login Portal States
@@ -1705,7 +1705,7 @@ function Admin() {
                     💡 **Wedding Theme Simulator**: Di samping kanan adalah visualisasi render pratinjau dari template yang dipilih. Tema ini didesain floral putih elegan.
                   </p>
                   <p className="text-amber-600 font-semibold">
-                    🌐 Info Subdomain: Saat user mengakses link asli (contoh subdomain: `adi-rara.${getBaseDomain()}`), parser engine otomatis me-replace variabel data binding `{{variable}}` dengan data asli secara instan.
+                    {`🌐 Info Subdomain: Saat user mengakses link asli (contoh subdomain: adi-rara.${getBaseDomain()}), parser engine otomatis me-replace variabel data binding {{variable}} dengan data asli secara instan.`}
                   </p>
                 </div>
               </div>

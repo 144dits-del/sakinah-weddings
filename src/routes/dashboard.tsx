@@ -47,6 +47,7 @@ import {
   Tv,
   Check,
   CheckCircle2,
+  ShieldAlert,
 } from "lucide-react";
 
 // Register TanStack Route

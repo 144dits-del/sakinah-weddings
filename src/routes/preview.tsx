@@ -966,7 +966,7 @@ function Preview() {
             
             {/* Invitation Cover overlay (if closed) */}
             {!isOpen ? (
-              <section className={`absolute inset-0 z-50 ${theme.coverBg} ${theme.text} flex flex-col items-center justify-center text-center p-8 select-none overflow-hidden animate-fade-in`}>
+              <section className={`absolute inset-0 z-50 ${theme.coverBg} flex flex-col items-center justify-center text-center p-8 select-none overflow-hidden animate-fade-in`}>
                 
                 {/* Corner border ornaments for Monochrome */}
                 {isMonochrome && (
@@ -1076,7 +1076,7 @@ function Preview() {
                 </header>
 
                 {/* Content Area */}
-                <div key={tabKey} className={`flex-1 overflow-y-auto scrollbar-thin p-8 max-w-full ${theme.bg} ${theme.text}`}>
+                <div key={tabKey} className={`flex-1 overflow-y-auto scrollbar-thin p-8 max-w-full ${theme.bg}`}>
                   
                   {/* TAB 1: HOME */}
                   {activeTab === "Home" && (
