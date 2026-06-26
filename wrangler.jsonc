@@ -5,7 +5,7 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  "main": "@tanstack/react-start/server-entry",
+  "main": "dist/server/index.js",
   "build": {
     "command": "npm run build:cloudflare"
   },
