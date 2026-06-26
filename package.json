@@ -8,7 +8,7 @@
     "build": "vite build --config vite.config.lovable.js",
     "build:dev": "vite build --config vite.config.lovable.js --mode development",
     "preview": "vite preview --config vite.config.lovable.js",
-    "build:cloudflare": "vite build",
+    "build:cloudflare": "node -e \"const fs = require('fs'); fs.mkdirSync('dist/server', { recursive: true }); fs.writeFileSync('dist/server/index.js', '');\" && vite build",
     "deploy": "wrangler deploy",
     "lint": "eslint .",
     "format": "prettier --write ."
