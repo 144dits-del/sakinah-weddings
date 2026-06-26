@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getBaseDomain } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -985,7 +986,7 @@ export default function FullScreenInvitation({
             {/* WATERMARK KHUSUS PAKET GRATIS (SAKINAH) DI BAWAH BOTTOM BAR */}
             {activePkg === "Sakinah" && (
               <div className={`absolute bottom-0 inset-x-0 z-30 h-5 border-t flex items-center justify-center text-[8px] font-semibold select-none ${isMonochrome ? "bg-zinc-100 border-zinc-200 text-zinc-600" : "bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-950/30 dark:border-rose-900/40"}`}>
-                Undangan ini dibuat gratis menggunakan <span className={`font-bold ml-1 ${isMonochrome ? "text-zinc-900" : "text-rose-700 dark:text-rose-400"}`}>sakinahweb.lovable.app</span>
+                Undangan ini dibuat gratis menggunakan <span className={`font-bold ml-1 ${isMonochrome ? "text-zinc-900" : "text-rose-700 dark:text-rose-400"}`}>{getBaseDomain()}</span>
               </div>
             )}
 

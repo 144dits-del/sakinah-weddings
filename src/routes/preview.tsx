@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { getBaseDomain } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -935,7 +936,7 @@ function Preview() {
               {/* WATERMARK KHUSUS PAKET GRATIS (SAKINAH) DI BAWAH BOTTOM BAR */}
               {activePkg === "Sakinah" && (
                 <div className={`absolute bottom-0 inset-x-0 z-30 h-5 border-t flex items-center justify-center text-[8px] font-semibold select-none ${isMonochrome ? "bg-zinc-100 border-zinc-200 text-zinc-600" : "bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-950/30 dark:border-rose-900/40"}`}>
-                  Undangan ini dibuat gratis menggunakan <span className={`font-bold ml-1 ${isMonochrome ? "text-zinc-900" : "text-rose-700 dark:text-rose-400"}`}>sakinahweb.lovable.app</span>
+                  Undangan ini dibuat gratis menggunakan <span className={`font-bold ml-1 ${isMonochrome ? "text-zinc-900" : "text-rose-700 dark:text-rose-400"}`}>{getBaseDomain()}</span>
                 </div>
               )}
 
@@ -955,7 +956,7 @@ function Preview() {
               <span className="h-3 w-3 rounded-full bg-emerald-500 block" />
             </div>
             <div className="flex-1 bg-background text-[10px] text-muted-foreground px-4 py-1.5 rounded-lg border font-mono select-all flex items-center justify-between">
-              <span>https://{wedding.subdomain || "di-ra"}.sakinahweb.lovable.app</span>
+              <span>https://{wedding.subdomain || "di-ra"}.{getBaseDomain()}</span>
               <span className="text-emerald-600 font-bold">🔒 Secure Connection</span>
             </div>
           </div>
@@ -1244,7 +1245,7 @@ function Preview() {
                 {/* Footer Watermark for Free package */}
                 {activePkg === "Sakinah" && (
                   <div className={`h-8 border-t flex items-center justify-center text-[9px] font-semibold select-none shrink-0 ${isMonochrome ? "bg-zinc-100 border-zinc-200 text-zinc-600" : "bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-950/30 dark:border-rose-900/40"}`}>
-                    Undangan digital gratis dibuat di <span className="font-bold text-rose-700 ml-1">sakinahweb.lovable.app</span>
+                    Undangan digital gratis dibuat di <span className="font-bold text-rose-700 ml-1">{getBaseDomain()}</span>
                   </div>
                 )}
 

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { getBaseDomain } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,9 +65,9 @@ function Wizard() {
                 <Label>Subdomain</Label>
                 <div className="flex">
                   <Input value={data.subdomain} onChange={e => upd("subdomain", e.target.value)} className="rounded-r-none" />
-                  <span className="grid place-items-center px-4 rounded-r-md bg-muted text-sm text-muted-foreground border border-l-0 border-input">.sakinahweb.id</span>
+                  <span className="grid place-items-center px-4 rounded-r-md bg-muted text-sm text-muted-foreground border border-l-0 border-input">.{getBaseDomain()}</span>
                 </div>
-                <p className="text-sm text-gold">Preview: {data.subdomain || "namapasangan"}.sakinahweb.id</p>
+                <p className="text-sm text-gold">Preview: {data.subdomain || "namapasangan"}.{getBaseDomain()}</p>
               </div>
             </div>
           )}
@@ -120,7 +121,7 @@ function Wizard() {
               <h2 className="font-display text-3xl">Selesai!</h2>
               <p className="text-muted-foreground">Undangan kalian siap dibagikan.</p>
               <div className="text-left rounded-xl bg-muted/40 p-4 text-sm space-y-1.5">
-                <div><span className="text-muted-foreground">URL:</span> <b>{data.subdomain || "di-ra"}.sakinahweb.id</b></div>
+                <div><span className="text-muted-foreground">URL:</span> <b>{data.subdomain || "di-ra"}.{getBaseDomain()}</b></div>
                 <div><span className="text-muted-foreground">Mempelai:</span> <b>{data.groom.nickname || "bibi"} & {data.bride.nickname || "rarw"}</b></div>
                 <div><span className="text-muted-foreground">Akad:</span> <b>{data.akad.date || "—"} {data.akad.start && `(${data.akad.start})`}</b></div>
                 <div><span className="text-muted-foreground">Resepsi:</span> <b>{data.resepsi.date || "—"} {data.resepsi.start && `(${data.resepsi.start})`}</b></div>

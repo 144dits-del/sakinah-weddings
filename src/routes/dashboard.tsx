@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { getBaseDomain } from "@/lib/utils";
 import { UserSidebar, menu } from "@/components/dashboard/UserSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -575,14 +576,14 @@ function Dashboard() {
                 <div className="absolute -right-2 -bottom-2 opacity-10 text-gold font-display text-6xl">🔗</div>
                 <div className="text-xs text-muted-foreground">URL Undangan Pribadi</div>
                 <div className="font-mono text-xs mt-2 text-gold font-semibold truncate">
-                  {weddingData.subdomain}.sakinahweb.id
+                  {weddingData.subdomain}.{getBaseDomain()}
                 </div>
                 <Button
                   size="sm"
                   variant="outline"
                   className="mt-2 text-[10px] h-7 rounded-full flex items-center gap-1"
                   onClick={() => {
-                    navigator.clipboard.writeText(`https://${weddingData.subdomain}.sakinahweb.id`);
+                    navigator.clipboard.writeText(`https://${weddingData.subdomain}.${getBaseDomain()}`);
                     toast.success("Tautan undangan berhasil disalin ke clipboard!");
                   }}
                 >
@@ -688,11 +689,11 @@ function Dashboard() {
                     placeholder="nama-subdomain"
                   />
                   <span className="grid place-items-center px-4 rounded-r-md bg-muted text-xs text-muted-foreground border border-l-0 border-input font-mono font-semibold">
-                    .sakinahweb.id
+                    .{getBaseDomain()}
                   </span>
                 </div>
                 <p className="text-[10px] text-gold mt-1.5 font-medium">
-                  Pratinjau tautan Anda: https://{domainName || "di-ra"}.sakinahweb.id
+                  Pratinjau tautan Anda: https://{domainName || "di-ra"}.{getBaseDomain()}
                 </p>
                 <div className="mt-2 text-[10px] text-muted-foreground bg-cream/40 px-3 py-2 rounded-lg border border-gold/10">
                   ⚠️ <b>Info:</b> Anda sudah mengganti domain sebanyak <b>0 kali</b> dari maksimum 3 kali.
@@ -1334,7 +1335,7 @@ function Dashboard() {
                       Tautan Khusus Tamu (Share URL Preview)
                     </Label>
                     <div className="font-mono text-xs text-gold font-bold mt-1 bg-background px-3 py-2 rounded border border-border select-all select-none truncate">
-                      https://{weddingData.subdomain}.sakinahweb.id/kepada/
+                      https://{weddingData.subdomain}.{getBaseDomain()}/kepada/
                       {guestName.replace(/\s+/g, "") || "NamaTamu"}-{guestAddress.replace(/\s+/g, "") || "Tempat"}
                     </div>
                   </div>
@@ -1343,7 +1344,7 @@ function Dashboard() {
                     <Button
                       className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-semibold"
                       onClick={() => {
-                        const url = `https://${weddingData.subdomain}.sakinahweb.id/kepada/${guestName.replace(/\s+/g, "") || "NamaTamu"}-${guestAddress.replace(/\s+/g, "") || "Tempat"}`;
+                         const url = `https://${weddingData.subdomain}.${getBaseDomain()}/kepada/${guestName.replace(/\s+/g, "") || "NamaTamu"}-${guestAddress.replace(/\s+/g, "") || "Tempat"}`;
                         window.open(`https://api.whatsapp.com/send?text=Halo ${guestName}, kami mengundang Anda ke pernikahan kami. Silahkan buka tautan berikut: ${url}`, "_blank");
                       }}
                     >
@@ -1353,7 +1354,7 @@ function Dashboard() {
                       variant="outline"
                       className="rounded-full text-xs font-semibold"
                       onClick={() => {
-                        const url = `https://${weddingData.subdomain}.sakinahweb.id/kepada/${guestName.replace(/\s+/g, "") || "NamaTamu"}-${guestAddress.replace(/\s+/g, "") || "Tempat"}`;
+                         const url = `https://${weddingData.subdomain}.${getBaseDomain()}/kepada/${guestName.replace(/\s+/g, "") || "NamaTamu"}-${guestAddress.replace(/\s+/g, "") || "Tempat"}`;
                         navigator.clipboard.writeText(url);
                         toast.success("Tautan khusus tamu berhasil disalin!");
                       }}
@@ -1847,7 +1848,7 @@ function Dashboard() {
                       </div>
 
                       <div className="relative text-[5px] text-white/60 mb-2">
-                        sakinahweb.id/{weddingData.subdomain}
+                        {getBaseDomain()}/{weddingData.subdomain}
                       </div>
                     </div>
                   </div>

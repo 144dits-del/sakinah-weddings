@@ -90,10 +90,13 @@ function Landing() {
           sub = host.split(".sakinahweb.lovable.app")[0];
         } else if (host.includes(".sakinahweb.id") && host !== "sakinahweb.id") {
           sub = host.split(".sakinahweb.id")[0];
+        } else if (host.includes(".sakinah.studio") && host !== "sakinah.studio") {
+          sub = host.split(".sakinah.studio")[0];
         } else if (
           !host.startsWith("www.") &&
           host !== "sakinahweb.id" &&
           host !== "sakinahweb.lovable.app" &&
+          host !== "sakinah.studio" &&
           host.split(".").length > 2
         ) {
           sub = host.split(".")[0];

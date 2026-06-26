@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { getBaseDomain } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -771,9 +772,9 @@ function Admin() {
     handleSaveWebsites(next);
     const updatedStatus = next.find(w => w.sub === sub)?.status;
     if (updatedStatus === "Aktif") {
-      toast.success(`Website ${sub}.sakinahweb.id berhasil diaktifkan kembali! 🚀`);
+      toast.success(`Website ${sub}.${getBaseDomain()} berhasil diaktifkan kembali! 🚀`);
     } else {
-      toast.error(`Website ${sub}.sakinahweb.id dinonaktifkan (Expired).`);
+      toast.error(`Website ${sub}.${getBaseDomain()} dinonaktifkan (Expired).`);
     }
   };
 
@@ -1496,7 +1497,7 @@ function Admin() {
                 </div>
 
                 <div className="pt-2 border-t border-border text-[9px] text-amber-600 font-semibold leading-relaxed">
-                  ⚠️ Reminder: Bila user menggunakan domain/tautan asli, subdomain unik otomatis dialokasikan (contoh: di-ra.sakinahweb.lovable.app) dan sistem akan memetakan data user ini secara dinamis.
+                  ⚠️ Reminder: Bila user menggunakan domain/tautan asli, subdomain unik otomatis dialokasikan (contoh: di-ra.{getBaseDomain()}) dan sistem akan memetakan data user ini secara dinamis.
                 </div>
 
               </div>
@@ -1704,7 +1705,7 @@ function Admin() {
                     💡 **Wedding Theme Simulator**: Di samping kanan adalah visualisasi render pratinjau dari template yang dipilih. Tema ini didesain floral putih elegan.
                   </p>
                   <p className="text-amber-600 font-semibold">
-                    🌐 Info Subdomain: Saat user mengakses link asli (contoh subdomain: `adi-rara.sakinahweb.lovable.app`), parser engine otomatis me-replace variabel data binding `{{variable}}` dengan data asli secara instan.
+                    🌐 Info Subdomain: Saat user mengakses link asli (contoh subdomain: `adi-rara.${getBaseDomain()}`), parser engine otomatis me-replace variabel data binding `{{variable}}` dengan data asli secara instan.
                   </p>
                 </div>
               </div>
@@ -1876,7 +1877,7 @@ function Admin() {
                       <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 block" />
                     </div>
                     <div className="flex-1 bg-background text-[9px] text-muted-foreground px-3 py-1 rounded-lg border font-mono select-all flex items-center justify-between">
-                      <span>https://adi-rara.sakinahweb.lovable.app</span>
+                      <span>https://adi-rara.{getBaseDomain()}</span>
                       <span className="text-emerald-600 font-bold">🔒 Secure Connection</span>
                     </div>
                   </div>
@@ -2249,7 +2250,7 @@ function Admin() {
                     .filter((w) => w.sub.toLowerCase().includes(webQuery.toLowerCase()))
                     .map((w, idx) => (
                       <tr key={idx} className="border-b border-border/40 last:border-0 hover:bg-muted/25">
-                        <td className="p-3 font-mono font-bold text-gold">{w.sub}.sakinahweb.id</td>
+                        <td className="p-3 font-mono font-bold text-gold">{w.sub}.{getBaseDomain()}</td>
                         <td className="p-3 font-medium capitalize">
                           {w.groom} & {w.bride}
                         </td>
@@ -2273,7 +2274,7 @@ function Admin() {
                             size="sm"
                             variant="outline"
                             className="text-[9px] h-7 rounded-full"
-                            onClick={() => window.open(`https://${w.sub}.sakinahweb.id`, "_blank")}
+                            onClick={() => window.open(`https://${w.sub}.${getBaseDomain()}`, "_blank")}
                           >
                             <ExternalLink className="h-3 w-3 mr-1" /> Kunjungi
                           </Button>

@@ -6,6 +6,20 @@
     "nodejs_compat"
   ],
   "main": "@tanstack/react-start/server-entry",
+  "routes": [
+    {
+      "pattern": "sakinah.studio/*",
+      "zone_name": "sakinah.studio"
+    },
+    {
+      "pattern": "www.sakinah.studio/*",
+      "zone_name": "sakinah.studio"
+    },
+    {
+      "pattern": "*.sakinah.studio/*",
+      "zone_name": "sakinah.studio"
+    }
+  ],
   "observability": {
     "enabled": true
   }
