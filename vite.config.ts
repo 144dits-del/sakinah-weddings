@@ -1,19 +1,28 @@
-// NOTE: @lovable.dev/vite-tanstack-config wraps TanStack Start + React + Tailwind + Nitro (cloudflare preset)
-// @cloudflare/vite-plugin is added here so wrangler can detect it and skip its setup wizard
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { defineConfig } from "vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import tsConfigPaths from "vite-tsconfig-paths";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 
+// Standard Vite config for Cloudflare Workers deployment
+// @cloudflare/vite-plugin handles TanStack Start SSR for Cloudflare Workers
 export default defineConfig({
-  tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    server: { entry: "server" },
+  plugins: [
+    cloudflare(),
+    TanStackRouterVite({ autoCodeSplitting: true }),
+    react(),
+    tailwindcss(),
+    tsConfigPaths({
+      projects: ["./tsconfig.json"],
+    }),
+  ],
+  server: {
+    port: 8080,
+    host: "::",
+    strictPort: true,
   },
-  vite: {
-    plugins: [cloudflare()],
-    server: {
-      port: 8080,
-      host: "::",
-      strictPort: true,
-    },
+  build: {
+    target: "esnext",
   },
 });
