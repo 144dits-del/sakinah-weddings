@@ -6,6 +6,9 @@
     "nodejs_compat"
   ],
   "main": "dist/server/index.js",
+  "assets": {
+    "directory": "dist/client"
+  },
   "build": {
     "command": "npm run build:cloudflare"
   },
